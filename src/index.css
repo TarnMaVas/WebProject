@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* 
+font_size:
+14px - 1.51vh
+16px - 1.72vh
+18px - 1.94vh
+20px - 2.15vh
+24px - 2.59vh
+30px - 3.24vh
+40px - 4.31vh
+48px - 5.17vh
+*/
+
+body {
+    font-family: 'Inter';
+    font-weight: 500;
+    font-size: clamp(1rem, 2.15vh, 1vw);
+    margin: 0;
+
+    background-color: #020d1f;
+}
+
+.green {
+    color: #15cd2e;
+}
+
+.violet {
+    color: #A500FF;
+}
+
+.orange-border {
+    border: 0.1vh solid rgba(244, 147, 37, 0.2);
+}
+
+
+.green-background {
+    background-color: #2BCB0D;
+}
+
+/* .inactive-btn {
+    background-color: #F2F2F2;
+} */
+
+/* .white-symbol {
+    filter: brightness(0) invert(1);
+} */
+
+.black-text {
+    color: #2B2B2B;
+}
+.dark-gray  {
+    color: #585858;
+}
+
+.gray  {
+    color: #575757;
+}
+
+.gray-transparent  {
+    color: #575757;
+    opacity: 0.5;
+}
+
+.light-gray  {
+    color: #828282;
+}
+
+.white {
+    color: #FFFFFF;
+}
+
+.shadow {
+    color: #a4a4a4;
+}
+
+.regular {
+    font-weight: 400;
+}
+
+.medium {
+    font-weight: 500;
+}
+
+.semibold {
+    font-weight: 600;
+}
+
+.bold {
+    font-weight: 700;
+}
+
+.extra-bold {
+    font-weight: 800;
+}
+
+.black {
+    font-weight: 900;
+}
+
+button {
+    font-family: 'Inter', sans-serif;
+}
+
+.main {
+    padding-top: 5vh;
+}
+
+.logo {
+    margin: 0;
+    font-size: 3.24vh;
+    font-family: 'Roboto';
+}
+
+.sign-up-btn {
+    font-size: clamp(1rem, 2.15vh, 1vw);
+    background-color: #15cd2e;
+    width: 7.5vw;
+    min-width: 10%;
+    height: 6.3vh;
+    text-decoration: none;
+    border: 0.5vh solid transparent;
+    border-radius: 4vh;
+}

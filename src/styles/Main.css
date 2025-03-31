@@ -1,0 +1,10 @@
+.main {
+    font-family: 'Inter';
+    display: flex;
+    flex-direction: column;
+    padding: 3.24vh 9.375%;
+    align-items: center;
+    margin: auto auto;
+
+    background: radial-gradient(circle, #A500FF 50%, rgba(165, 0, 255, 0.5) 75%, transparent 100%);
+}
