@@ -5,6 +5,95 @@
     padding: 3.24vh 9.375%;
     align-items: center;
     margin: auto auto;
+}
 
-    background: radial-gradient(circle, #A500FF 50%, rgba(165, 0, 255, 0.5) 75%, transparent 100%);
+.multi-select {
+    width: 80%;
+    padding: 1.2vh 2vw;
+    font-size: 2.15vh;
+    border-radius: 1vh;
+    color: #ffffff;
+    transition: all 0.3s ease-in-out;
+  }
+  
+.multi-select:focus {
+outline: none;
+border-color: #39cf39;
+box-shadow: 0 0 2vh #39cf39;
+}
+
+.multi-select .react-select__control {
+background-color: #1c1f26;
+border: 2px solid #5a5f69;
+border-radius: 1.2vh;
+}
+
+.multi-select .react-select__control--is-focused {
+border-color: #39cf39;
+box-shadow: 0 0 2vh #39cf39;
+}
+
+.multi-select .react-select__menu {
+background-color: #1c1f26;
+border-radius: 1vh;
+}
+
+.multi-select .react-select__option {
+color: #ffffff;
+padding: 1.2vh;
+font-size: 2.15vh;
+transition: background 0.2s;
+cursor: pointer;
+}
+
+.multi-select .react-select__option--is-selected {
+background-color: #15cd2e;
+color: #020d1f;
+}
+
+.multi-select .react-select__option--is-focused {
+background-color: #39cf39;
+}
+
+.multi-select .react-select__multi-value {
+background-color: #15cd2e;
+border-radius: 0.5vh;
+}
+
+.multi-select .react-select__multi-value__label {
+color: #020d1f;
+}
+
+.multi-select .react-select__multi-value__remove {
+color: #020d1f;
+}
+
+.multi-select .react-select__multi-value__remove:hover {
+background-color: #03ff03;
+color: #020d1f;
+}
+
+.multi-select .react-select__control {
+    background-color: #1c1f26 !important;
+    border: 2px solid #5a5f69 !important;
+    border-radius: 1.2vh !important;
+    font-family: 'Inter', sans-serif !important; 
+    font-size: 2.15vh !important;
+}
+
+.multi-select .react-select__input {
+    padding: 1.2vh 2vw !important;
+    font-family: 'Inter', sans-serif !important; 
+    font-size: 2.15vh !important;
+    color: #ffffff !important;
+    font-size: 2.15vh !important;
+}
+
+.multi-select .react-select__placeholder {
+    color: #ffffff !important;
+    font-size: 2.15vh !important;
+    font-family: 'Inter', sans-serif !important;
+    padding-left: 2vw !important;
+    opacity: 0.4 !important;
+    font-weight: 400 !important;
 }

@@ -18,7 +18,8 @@ body {
     font-size: clamp(1rem, 2.15vh, 1vw);
     margin: 0;
 
-    background-color: #020d1f;
+    background: radial-gradient(circle at top right, rgb(100, 0, 150) 15%,  #020d1f 80%);
+    background-attachment: fixed;
 }
 
 .green {
