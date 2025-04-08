@@ -1,11 +1,8 @@
 .results-container {
     margin-top: 2vh;
     width: 80%;
-    /* background-color: #1c1f26;
-    border: 2px solid #5a5f69;
-    border-radius: 1vh; */
+
     padding: 5vh 3vw;
-    /* color: #ffffff; */
     font-family: 'Inter', sans-serif;
 }
 
@@ -18,9 +15,10 @@
 }
 
 .result-header {
-    font-size: 2.5vh;
+    font-size: 3.5vh;
     font-weight: bold;
     margin-bottom: 1vh;
+    margin-top: 1vh;
     color: #15cd2e;
 }
 
@@ -37,7 +35,7 @@
 }
 
 .result-tags {
-    margin-top: 1vh;
+    margin-top: 3vh;
     display: flex;
     gap: 1vh;
     flex-wrap: wrap;
@@ -64,7 +62,7 @@
 }
 
 .result-reviews {
-    font-size: 1.8vh;
+    font-size: 2vh;
     color: #ffffff;
     display: flex;
     justify-content: space-between;
@@ -99,12 +97,13 @@
 
 .comment {
     margin-top: 1vh;
-    padding: 1vh;
+    padding: 0.5vh;
     background-color: #1c1f26;
     border-radius: 0.5vh;
 }
 
 .comment-author {
+    margin-top: 0.5vh;
     font-size: 1.8vh;
     font-weight: bold;
     color: #39cf39;
@@ -123,3 +122,16 @@
     color: #A500FF;
     margin-bottom: 1vh;
 }
+
+.not-found-text {
+    font-size: 4vh;
+    color: #15cd2e;
+    text-align: center;
+    padding: 2vh 4vw;
+    border: 2px solid #5a5f69;
+    border-radius: 1.5vh;
+    background-color: #1c1f26;
+    box-shadow: 0 0 2vh rgba(0, 0, 0, 0.2);
+    margin: 2vh auto;
+    width: fit-content;
+  }

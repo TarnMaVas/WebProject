@@ -1,92 +1,50 @@
 import React from "react";
 import "../styles/Results.css";
+import likeIcon from "../icons/thumb_up.svg";
+import dislikeIcon from "../icons/thumb_down.svg";
 
-const Results = () => {
+const Results = ({ results }) => {
   return (
     <div className="results-container">
-      <div className="result-item">
-        <h3 className="result-header">Comparetto</h3>
-        <p className="results-label">Author: <span className="result-author">CodeMaster</span></p>
+      {results.length === 0 ? (
+        <h1 className = "not-found-text">No fitting results found.</h1>
+      ) : (
+        results.map((result) => (
+          <div className="result-item" key={result.id}>
+            <h3 className="result-header">{result.title}</h3>
+            <p className="results-label">
+              Author: <span className="result-author">{result.author}</span>
+            </p>
 
-        <pre className="result-code">
-        {`function compareNumbers(a, b) {
-  if (a > b) {
-    return "a is greater";
-  } else if (a < b) {
-    return "b is greater";
-  } else {
-    return "a and b are equal";
-  }
-}`}
-        </pre>
+            <pre className="result-code">{result.code}</pre>
 
-        <div className="result-tags">
-          <p className="results-label">Tags:</p>
-          <span className="tag">JavaScript</span>
-          <span className="tag">Beginner</span>
-        </div>
+            <div className="result-tags">
+              <p className="results-label">Tags:</p>
+              {result.tags.map((tag, index) => (
+                <span className="tag" key={index}>{tag}</span>
+              ))}
+            </div>
 
-        <div className="result-reviews">
-          <p>
-            <span>👍 120</span> | <span className="negative">👎 5</span>
-          </p>
-        </div>
+            <div className="result-reviews">
+            <p>
+                <img src={likeIcon} alt="Like" className="review-icon" /> {result.likes} |{" "}
+                <img src={dislikeIcon} alt="Dislike" className="review-icon negative" />{" "}
+                {result.dislikes}
+              </p>
+            </div>
 
-        <div className="result-comments">
-          <p className="comments-label">Comments:</p>
-          <div className="comment">
-            <p className="comment-author">User123:</p>
-            <p className="comment-text">This is a great example for beginners!</p>
+            <div className="result-comments">
+              <p className="comments-label">Comments:</p>
+              {result.comments.map((comment, index) => (
+                <div className="comment" key={index}>
+                  <p className="comment-author">{comment.author}:</p>
+                  <p className="comment-text">{comment.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="comment">
-            <p className="comment-author">CodeLover:</p>
-            <p className="comment-text">Nice french!</p>
-          </div>
-
-        </div>
-      </div>
-
-      <div className="result-item">
-        <h3 className="result-header">Comparetto</h3>
-        <p className="results-label">Author: <span className="result-author">CodeMaster</span></p>
-
-        <pre className="result-code">
-        {`function compareNumbers(a, b) {
-  if (a > b) {
-    return "a is greater";
-  } else if (a < b) {
-    return "b is greater";
-  } else {
-    return "a and b are equal";
-  }
-}`}
-        </pre>
-
-        <div className="result-tags">
-          <p className="results-label">Tags:</p>
-          <span className="tag">JavaScript</span>
-          <span className="tag">Beginner</span>
-        </div>
-
-        <div className="result-reviews">
-          <p>
-            <span>👍 120</span> | <span className="negative">👎 5</span>
-          </p>
-        </div>
-
-        <div className="result-comments">
-          <p className="comments-label">Comments:</p>
-          <div className="comment">
-            <p className="comment-author">User123:</p>
-            <p className="comment-text">This is a great example for beginners!</p>
-          </div>
-          <div className="comment">
-            <p className="comment-author">CodeLover:</p>
-            <p className="comment-text">Nice french!</p>
-          </div>
-
-        </div>
-      </div>
+        ))
+      )}
     </div>
   );
 };

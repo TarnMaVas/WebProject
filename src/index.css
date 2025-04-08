@@ -113,6 +113,12 @@ button {
     font-family: 'Roboto';
 }
 
+.logo:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+    transition: transform 0.3s ease-in-out;
+}
+
 .sign-up-btn {
     font-size: clamp(1rem, 2.15vh, 1vw);
     background-color: #15cd2e;
