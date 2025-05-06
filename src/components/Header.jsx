@@ -3,9 +3,13 @@ import '../styles/Header.css';
 import ProfileIcon from './ProfileIcon';
 
 const Header = () => {
+  const goToHome = () => {
+    window.location.href = '/';
+  };
+
   return (
     <header className="header">
-      <h3 className="logo bold violet">
+      <h3 className="logo bold violet" onClick={goToHome}>
         <span className="green black">Snippet</span>Search
       </h3>
 

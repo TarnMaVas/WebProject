@@ -1,13 +1,132 @@
+.profile-container {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 10vw;
+  min-width: 40px;
+}
+
+.profile-icon-wrapper {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .profile-icon {
-    display: block;
-    width: 5%;
-    height: auto;
-    margin: 0;
-    padding: 0;
-  }
+  display: block;
+  width: 50%;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.3s, filter 0.3s;
+}
 
 .profile-icon:hover {
-    cursor: pointer;
-    transform: scale(1.05);
-    transition: transform 0.3s ease-in-out;
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+.profile-icon:active {
+  transform: scale(0.95);
+}
+
+.user-avatar {
+  width: 3vw;
+  height: 3vw;
+  border-radius: 50%;
+  background-color: #15cd2e;
+  color: #020d1f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5vw;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.3s, filter 0.3s;
+}
+
+.user-avatar:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+.user-avatar:active {
+  transform: scale(0.95);
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 4vw;
+  right: 0;
+  width: 250px;
+  background-color: #2a2f38;
+  border-radius: 1vh;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-header {
+  padding: 1.5vh 1vw;
+  border-bottom: 1px solid #5a5f69;
+}
+
+.username {
+  font-size: 2vh;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 0 0 0.5vh 0;
+}
+
+.email {
+  font-size: 1.5vh;
+  color: #cccccc;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-options {
+  padding: 1vh 0;
+}
+
+.dropdown-option {
+  width: 100%;
+  text-align: left;
+  padding: 1.2vh 1vw;
+  font-size: 1.8vh;
+  color: #ffffff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dropdown-option:hover {
+  background-color: #1c1f26;
+  color: #15cd2e;
+}
+
+.dropdown-option:last-child {
+  color: #ff4d4d;
+}
+
+.dropdown-option:last-child:hover {
+  background-color: #1c1f26;
+  color: #ff6b6b;
+}
