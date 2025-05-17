@@ -1,0 +1,46 @@
+.avatar-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.avatar-popup {
+  background: #121212;
+  padding: 3vh;
+  border-radius: 1vh;
+  max-width: 400px;
+  width: 90%;
+  color: white;
+  text-align: center;
+}
+
+.avatar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.avatar-body input {
+  margin-top: 2vh;
+}
+
+.avatar-preview img {
+  margin-top: 2vh;
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 50%;
+}
+
+.avatar-footer {
+  margin-top: 2vh;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
