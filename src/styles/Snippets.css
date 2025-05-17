@@ -1,0 +1,12 @@
+.snippets-placeholder {
+  margin-top: 4vh;
+  padding: 2vh;
+  border-radius: 1vh;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.snippets-placeholder p {
+  font-style: italic;
+  opacity: 0.7;
+}

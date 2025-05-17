@@ -2,9 +2,9 @@ import React from 'react';
 import '../styles/Header.css';
 import ProfileIcon from './ProfileIcon';
 
-const Header = () => {
+const Header = ({ setPage }) => {
   const goToHome = () => {
-    window.location.href = '/';
+    setPage('main');
   };
 
   return (
@@ -14,12 +14,12 @@ const Header = () => {
       </h3>
 
       <nav className="header-nav">
-        <a className="header-link green bold" href="#">Home</a>
-        <a className="header-link shadow" href="#">Popular</a>
-        <a className="header-link shadow" href="#">Favorites</a>
+        <a className="header-link green bold" href="#" onClick={() => setPage('main')}>Home</a>
+        <a className="header-link shadow" href="#" onClick={() => setPage('popular')}>Popular</a>
+        <a className="header-link shadow" href="#" onClick={() => setPage('favorites')}>Favorites</a>
       </nav>
 
-      <ProfileIcon />
+      <ProfileIcon setPage={setPage} />
     </header>
   );
 };
