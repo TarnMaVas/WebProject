@@ -1,4 +1,4 @@
-import { collection, getDocs, doc, arrayRemove, updateDoc, arrayUnion, getDoc, increment, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, doc, arrayRemove, updateDoc, arrayUnion, getDoc, increment, Timestamp, setDoc } from 'firebase/firestore';
 import { db } from './config';
 import { getCurrentUser } from './auth'
 import { v4 as uuidv4 } from 'uuid'
@@ -253,3 +253,171 @@ export const migrateCommentsAddIds = async () => {
   }
 };
 
+export const getPopularSnippets = async () => {
+  try {
+    const currentUser = getCurrentUser();
+    const userId = currentUser?.uid;
+    
+    const snippetsCollection = collection(db, 'snippets');
+    const snippetsSnapshot = await getDocs(snippetsCollection);
+    
+    const sortedSnippets = snippetsSnapshot.docs
+      .map(doc => {
+        const snippet = {
+          id: doc.id,
+          ...doc.data()
+        };
+          if (userId && snippet.userReactions) {
+          const userReaction = snippet.userReactions[userId];
+          snippet.userHasLiked = userReaction === 'like';
+          snippet.userHasDisliked = userReaction === 'dislike';
+        }
+          const likes = snippet.likes || 0;
+        const dislikes = snippet.dislikes || 0;
+        const total = likes + dislikes;
+        snippet.rating = total > 0 ? likes / total : 0;
+        
+        return snippet;
+      })
+      .sort((a, b) => {
+        const likesA = a.likes || 0;
+        const likesB = b.likes || 0;
+        
+        if (likesB !== likesA) {
+          return likesB - likesA;
+        }
+        
+        return b.rating - a.rating;
+      })
+      .slice(0, 15);
+    
+    return sortedSnippets;
+  } catch (error) {
+    console.error("Error fetching popular snippets:", error);
+    return [];
+  }
+};
+
+export const getFavoriteSnippets = async (userId) => {
+  try {
+    if (!userId) return [];
+    
+    const userFavoritesRef = doc(db, 'favorites', userId);
+    const userFavoritesSnapshot = await getDoc(userFavoritesRef);
+    
+    if (!userFavoritesSnapshot.exists()) {
+      return [];
+    }
+    
+    const favoriteIds = userFavoritesSnapshot.data().snippetIds || [];
+    
+    if (favoriteIds.length === 0) return [];
+    
+    const snippets = [];
+    for (const snippetId of favoriteIds) {
+      const snippetRef = doc(db, 'snippets', snippetId);
+      const snippetSnapshot = await getDoc(snippetRef);
+      
+      if (snippetSnapshot.exists()) {
+        const snippet = {
+          id: snippetSnapshot.id,
+          ...snippetSnapshot.data()
+        };
+        
+        if (snippet.userReactions) {
+          const userReaction = snippet.userReactions[userId];
+          snippet.userHasLiked = userReaction === 'like';
+          snippet.userHasDisliked = userReaction === 'dislike';
+        }
+        
+        snippets.push(snippet);
+      }
+    }
+    
+    return snippets;
+  } catch (error) {
+    console.error("Error fetching favorite snippets:", error);
+    return [];
+  }
+};
+
+export const addToFavorites = async (snippetId) => {
+  try {
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+      throw new Error('User must be logged in to add favorites');
+    }
+    
+    const userId = currentUser.uid;
+    const userFavoritesRef = doc(db, 'favorites', userId);
+    const userFavoritesDoc = await getDoc(userFavoritesRef);
+    
+    if (userFavoritesDoc.exists()) {
+      const favorites = userFavoritesDoc.data();
+      const snippetIds = favorites.snippetIds || [];
+      
+      if (!snippetIds.includes(snippetId)) {
+        await updateDoc(userFavoritesRef, {
+          snippetIds: arrayUnion(snippetId)
+        });
+      }
+    } else {
+      await setDoc(userFavoritesRef, {
+        snippetIds: [snippetId]
+      });
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error adding to favorites:', error);
+    throw error;
+  }
+};
+
+export const removeFromFavorites = async (snippetId) => {
+  try {
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+      throw new Error('User must be logged in to remove favorites');
+    }
+    
+    const userId = currentUser.uid;
+    const userFavoritesRef = doc(db, 'favorites', userId);
+    const userFavoritesDoc = await getDoc(userFavoritesRef);
+    
+    if (userFavoritesDoc.exists()) {
+      await updateDoc(userFavoritesRef, {
+        snippetIds: arrayRemove(snippetId)
+      });
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error removing from favorites:', error);
+    throw error;
+  }
+};
+
+export const isInFavorites = async (snippetId) => {
+  try {
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+      return false;
+    }
+    
+    const userId = currentUser.uid;
+    const userFavoritesRef = doc(db, 'favorites', userId);
+    const userFavoritesDoc = await getDoc(userFavoritesRef);
+    
+    if (userFavoritesDoc.exists()) {
+      const favorites = userFavoritesDoc.data();
+      const snippetIds = favorites.snippetIds || [];
+      return snippetIds.includes(snippetId);
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('Error checking favorites:', error);
+    return false;
+  }
+};

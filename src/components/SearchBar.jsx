@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Select from 'react-select';
 import '../styles/SearchBar.css';
-import { getOptions, filterSnippets } from '../firebase/services';
+import { getOptions } from '../firebase/services';
+import { useToast } from './ToastProvider';
+import { useFirebaseWithNotifications } from '../hooks/useFirebaseWithNotifications';
 
-const SearchBar = ({ onFilter }) => {
+const SearchBar = ({ onSearch, onSearchStart, onSearchEnd }) => {
   const [searchText, setSearchText] = useState('');
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [groupedOptions, setGroupedOptions] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);  const [groupedOptions, setGroupedOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
+  const { filterSnippets } = useFirebaseWithNotifications();
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -17,12 +20,30 @@ const SearchBar = ({ onFilter }) => {
     
     fetchOptions();
   }, []);
-
   const handleSearch = async () => {
+    if (onSearchStart) {
+      onSearchStart();
+    }
     setIsLoading(true);
-    const filteredResults = await filterSnippets(searchText, selectedTags);
-    onFilter(filteredResults);
-    setIsLoading(false);
+    
+    try {
+      const filteredResults = await filterSnippets(searchText, selectedTags);
+      onSearch(filteredResults);
+      
+      if (filteredResults.length === 0) {
+        toast.showInfo('No matching snippets found for your search');
+      } else if (filteredResults.length > 0) {
+        toast.showSuccess(`Found ${filteredResults.length} matching snippets`);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+      toast.showError('An error occurred while searching. Please try again.');
+    } finally {
+      setIsLoading(false);
+      if (onSearchEnd) {
+        onSearchEnd();
+      }
+    }
   };
 
   return (
@@ -33,16 +54,21 @@ const SearchBar = ({ onFilter }) => {
         placeholder="Search snippets..."
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !isLoading) {
+            handleSearch();
+          }
+        }}
       />
 
       <Select
         className="multi-select"
-        classNamePrefix="react-select"
+        classNamePrefix="my-select"
         options={groupedOptions}
         value={selectedTags}
         onChange={setSelectedTags}
         isMulti
-        isSearchable
+        isSearchable={false}
         placeholder="Filter by tags..."
         isDisabled={groupedOptions.length === 0}
       />
@@ -52,7 +78,7 @@ const SearchBar = ({ onFilter }) => {
         onClick={handleSearch}
         disabled={isLoading}
       >
-        {isLoading ? "Searching..." : "Search"}
+        Search
       </button>
     </div>
   );

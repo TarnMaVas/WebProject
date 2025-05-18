@@ -1,0 +1,121 @@
+.toast-message {
+  position: fixed;
+  bottom: 10vh;
+  right: 2vw;
+  min-width: 25vw;
+  max-width: 35vw;
+  background-color: #2a2f38;
+  color: white;
+  border-left: 0.8vh solid;  border-radius: 0.6vh;
+  padding: 1.5vh 2vw;  box-shadow: 0 0.6vh 2vh rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.toast-message.hidden {
+  animation: toast-fade-out 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  pointer-events: none;
+}
+
+.toast-message.visible {
+  animation: toast-fade-in 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  pointer-events: all;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.toast-icon {
+  margin-right: 1vw;
+}
+
+.toast-icon svg {
+  width: 2.8vh;
+  height: 2.8vh;
+}
+
+.toast-text {
+  font-size: 1.8vh;
+  font-weight: 500;
+  flex: 1;
+  letter-spacing: 0.02em;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 1vw;
+}
+
+.toast-close svg {
+  width: 1.8vh;
+  height: 1.8vh;
+}
+
+.toast-message.success {
+  border-color: #00e676;
+  box-shadow: 0 0.6vh 2vh rgba(0, 230, 118, 0.3);
+}
+
+.toast-message.success .toast-icon {
+  color: #00e676;
+}
+
+.toast-message.error {
+  border-color: #ff1744;
+  box-shadow: 0 0.6vh 2vh rgba(255, 23, 68, 0.3);
+}
+
+.toast-message.error .toast-icon {
+  color: #ff1744;
+}
+
+.toast-message.warning {
+  border-color: #ffc400;
+  box-shadow: 0 0.6vh 2vh rgba(255, 196, 0, 0.3);
+}
+
+.toast-message.warning .toast-icon {
+  color: #ffc400;
+}
+
+.toast-message.info {
+  border-color: #2979ff;
+  box-shadow: 0 0.6vh 2vh rgba(41, 121, 255, 0.3);
+}
+
+.toast-message.info .toast-icon {
+  color: #2979ff;
+}
+
+@keyframes toast-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(3vh) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-fade-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(3vh) scale(0.95);
+  }
+}
+

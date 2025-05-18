@@ -1,25 +1,42 @@
 import React from 'react';
 import '../styles/Header.css';
 import ProfileIcon from './ProfileIcon';
+import { Link, useLocation } from 'react-router-dom';
 
-const Header = ({ setPage }) => {
-  const goToHome = () => {
-    setPage('main');
-  };
-
+const Header = ({}) => {
+  const location = useLocation();
+  const currentPath = location.pathname;
+  
   return (
     <header className="header">
-      <h3 className="logo bold violet" onClick={goToHome}>
-        <span className="green black">Snippet</span>Search
-      </h3>
+      <Link to="/" style={{ textDecoration: 'none' }}>
+        <h3 className="logo bold violet">
+          <span className="green black">Snippet</span>Search
+        </h3>
+      </Link>
 
       <nav className="header-nav">
-        <a className="header-link green bold" href="#" onClick={() => setPage('main')}>Home</a>
-        <a className="header-link shadow" href="#" onClick={() => setPage('popular')}>Popular</a>
-        <a className="header-link shadow" href="#" onClick={() => setPage('favorites')}>Favorites</a>
+        <Link 
+          className={`header-link ${currentPath === '/' ? 'green bold' : 'shadow'}`}
+          to="/"
+        >
+          Home
+        </Link>
+        <Link 
+          className={`header-link ${currentPath === '/popular' ? 'green bold' : 'shadow'}`}
+          to="/popular"
+        >
+          Popular
+        </Link>
+        <Link 
+          className={`header-link ${currentPath === '/favorites' ? 'green bold' : 'shadow'}`}
+          to="/favorites"
+        >
+          Favorites
+        </Link>
       </nav>
 
-      <ProfileIcon setPage={setPage} />
+      <ProfileIcon/>
     </header>
   );
 };

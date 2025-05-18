@@ -2,15 +2,23 @@ import React, { useState, useEffect } from 'react';
 import '../styles/ProfileIcon.css';
 import AuthPopup from './AuthPopup';
 import AvatarPopup from './AvatarPopup';
-import { logoutUser, subscribeToAuthChanges } from '../firebase/auth';
+import { subscribeToAuthChanges } from '../firebase/auth';
 import { uploadUserAvatar } from '../firebase/storage';
 import { auth } from '../firebase/config';
+import { useToast } from './ToastProvider';
+import { useDialog } from './DialogProvider';
+import { useFirebaseWithNotifications } from '../hooks/useFirebaseWithNotifications';
+import { useNavigate } from 'react-router-dom';
 
-const ProfileIcon = ({ setPage }) => {
+const ProfileIcon = () => {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isChangingAvatar, setIsChangingAvatar] = useState(false);
+  const toast = useToast();
+  const dialog = useDialog();
+  const { logoutUser } = useFirebaseWithNotifications();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = subscribeToAuthChanges((user) => {
@@ -29,27 +37,32 @@ const ProfileIcon = ({ setPage }) => {
 
   const handleAuthSuccess = (user) => {
     setUser(user);
-  };
-
-  const handleLogout = async () => {
-    await logoutUser();
-    setShowDropdown(false);
+  };  const handleLogout = async () => {
+    dialog.confirm(
+      'Are you sure you want to log out?',
+      'Log Out',
+      {
+        onConfirm: async () => {
+          await logoutUser();
+          setShowDropdown(false);
+        }
+      }
+    );
   };
 
   const handleAvatarUpload = async (file) => {
     try {
       await uploadUserAvatar(file);
 
-      // force Firebase to refresh currentUser
       await auth.currentUser.reload();
       const refreshedUser = auth.currentUser;
 
-      setUser(refreshedUser); // 👈 this will update photoURL
+      setUser(refreshedUser);
       setIsChangingAvatar(false);
-      alert('Avatar updated!');
+      toast.showSuccess('Avatar updated successfully!');
     } catch (err) {
       console.error('Failed to update avatar:', err);
-      alert('Failed to update avatar.');
+      toast.showError('Failed to update avatar. Please try again.');
     }
   };
   return (
@@ -75,10 +88,9 @@ const ProfileIcon = ({ setPage }) => {
           <div className="dropdown-header">
             <p className="username">{user?.displayName || 'User'}</p>
             <p className="email">{user?.email}</p>
-          </div>
-          <div className="dropdown-options">
-            <button className="dropdown-option" onClick={() => setPage('profile')}>My Profile</button>
-            <button className="dropdown-option" onClick={() => setPage('snippets')}>My Snippets</button>
+          </div>          <div className="dropdown-options">
+            <button className="dropdown-option" onClick={() => navigate('/profile')}>My Profile</button>
+            <button className="dropdown-option" onClick={() => navigate('/snippets')}>My Snippets</button>
             <button className="dropdown-option" onClick={() => setIsChangingAvatar(true)}>Change Avatar</button>
             <button className="dropdown-option" onClick={handleLogout}>Logout</button>
           </div>

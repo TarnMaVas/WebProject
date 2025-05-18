@@ -1,17 +1,21 @@
 .results-container {
-    margin-top: 2vh;
+    margin: 2vh auto;
     width: 80%;
-
     padding: 5vh 3vw;
     font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .result-item {
     margin-bottom: 5vh;
     padding: 2vh;
-    border: 1px solid #5a5f69;
+    border: 0.1vh solid #5a5f69;
     border-radius: 1vh;
     background-color: #2a2f38;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .result-header {
@@ -20,6 +24,40 @@
     margin-bottom: 1vh;
     margin-top: 1vh;
     color: #15cd2e;
+}
+
+.result-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.favorite-button {
+    background: transparent;
+    border: none;
+    color: #f8d71c;
+    font-size: 2.4vh;
+    cursor: pointer;
+    padding: 0.5vh 1vw;
+    border-radius: 0.4vh;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.favorite-button:hover {
+    transform: scale(1.2);
+}
+
+.favorite-button.favorited {
+    color: #f8d71c;
+}
+
+.favorite-button:not(.favorited) {
+    color: #c0c0c0;
+}
+
+.favorite-button:disabled {
+    opacity: 0.5;
+    cursor: wait;
 }
 
 .result-code {
@@ -85,7 +123,7 @@
 .result-comments {
     margin-top: 2vh;
     padding-top: 1vh;
-    border-top: 1px solid #5a5f69;
+    border-top: 0.1vh solid #5a5f69;
 }
 
 .comments-label {
@@ -128,12 +166,70 @@
     color: #15cd2e;
     text-align: center;
     padding: 2vh 4vw;
-    border: 2px solid #5a5f69;
+    border: 0.2vh solid #5a5f69;
     border-radius: 1.5vh;
     background-color: #1c1f26;
     box-shadow: 0 0 2vh rgba(0, 0, 0, 0.2);
     margin: 2vh auto;
     width: fit-content;
+}
+
+.welcome-message {
+    text-align: center;
+    padding: 2vh 4vw;
+    border: 0.2vh solid #5a5f69;    
+    border-radius: 1.5vh;
+    background-color: #1c1f26;
+    box-shadow: 0 0 2vh rgba(0, 0, 0, 0.2);
+    margin: 0 auto 0;
+    width: fit-content;
+    max-width: 80%;
+}
+
+.welcome-message h2 {
+    font-size: 4vh;
+    color: #15cd2e;
+    margin-bottom: 1vh;
+}
+
+.welcome-message p {
+    font-size: 2.2vh;
+    color: #ffffff;
+    margin-top: 1vh;
+}
+
+.search-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3vh 4vw;
+    border: 0.2vh solid #5a5f69;
+    border-radius: 1.5vh;
+    background-color: #1c1f26;
+    box-shadow: 0 0 2vh rgba(0, 0, 0, 0.2);
+    margin: 2vh auto;
+    width: fit-content;
+}
+
+.loading-text {
+    font-size: 3.5vh;
+    color: #A500FF;
+    margin-top: 2vh;
+}
+
+.loading-spinner {
+    width: 6vh;
+    height: 6vh;
+    border: 0.8vh solid #1c1f26;
+    border-radius: 50%;
+    border-top: 0.8vh solid #A500FF;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
 .copy-button {
@@ -166,7 +262,7 @@
     align-items: center;
     gap: 0.5vh;
     background-color: #1c1f26;
-    border: 1px solid #5a5f69;
+    border: 0.1vh solid #5a5f69;
     border-radius: 0.5vh;
     padding: 0.5vh 1vh;
     color: #ffffff;
@@ -178,10 +274,6 @@
   .review-icon {
     width: 2vh;
     height: 2vh;
-  }
-  
-  .review-icon.negative {
-    transform: rotate(180deg);
   }
   
   .reaction-button.active {
@@ -214,7 +306,7 @@
   .comments-toggle {
     background-color: #1c1f26;
     color: #ffffff;
-    border: 1px solid #5a5f69;
+    border: 0.1vh solid #5a5f69;
     border-radius: 0.5vh;
     padding: 0.8vh 1.2vh;
     font-size: 1.6vh;
@@ -231,7 +323,7 @@
     padding: 1vh;
     background-color: #1c1f26;
     border-radius: 0.5vh;
-    border-left: 3px solid #39cf39;
+    border-left: 0.3vh solid #39cf39;
   }
   
   .comment-timestamp {
@@ -277,7 +369,7 @@
 
     width: 98%;
     min-height: 10vh;
-    border: 1px solid #5a5f69;
+    border: 0.1vh solid #5a5f69;
     background-color: #1c1f26;
     color: #ffffff;
     font-family: 'Inter', sans-serif;
@@ -285,11 +377,10 @@
     resize: vertical;
     margin-bottom: 1vh;
   }
-  
-  .add-comment-section textarea:focus {
+    .add-comment-section textarea:focus {
     outline: none;
     border-color: #39cf39;
-    box-shadow: 0 0 0 2px rgba(57, 207, 57, 0.2);
+    box-shadow: 0 0 0 0.2vh rgba(57, 207, 57, 0.2);
   }
   
   .submit-comment-button {

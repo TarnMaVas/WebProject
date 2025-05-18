@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/AuthPopup.css';
-import { registerUser, loginUser, resetPassword } from '../firebase/auth';
+import { useFirebaseWithNotifications } from '../hooks/useFirebaseWithNotifications';
 
 const AuthPopup = ({ isOpen, onClose, onAuthSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -11,6 +11,7 @@ const AuthPopup = ({ isOpen, onClose, onAuthSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const { registerUser, loginUser, resetPassword } = useFirebaseWithNotifications();
 
   if (!isOpen) return null;
 

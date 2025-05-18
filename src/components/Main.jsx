@@ -1,27 +1,77 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import Results from "./Results";
 import "../styles/Main.css";
-import upArrowIcon from "../icons/up-arrow-icon.svg";
-
+import { subscribeToAuthChanges } from "../firebase/auth";
+import { useSnippetInteractions } from "../hooks/useSnippetInteractions";
+import ScrollToTopButton from "./ScrollToTopButton";
+import { useToast } from "./ToastProvider";
 
 const Main = () => {
   const [filteredResults, setFilteredResults] = useState([]);
+  const [searchPerformed, setSearchPerformed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const toast = useToast();
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
+  useEffect(() => {
+    const unsubscribe = subscribeToAuthChanges(user => {
+      setCurrentUser(user);
     });
+
+    return () => unsubscribe();
+  }, []);
+  const handleSearch = (results) => {
+    setFilteredResults(results);
+    setSearchPerformed(true);
   };
 
+  const {
+    submittingComment,
+    submittingReaction,
+    newComments,
+    handleCommentChange,
+    handleCommentSubmit,
+    handleReaction,
+    handleDeleteComment,
+    hasUserReacted
+  } = useSnippetInteractions(currentUser, filteredResults, setFilteredResults);
+
+  const handleSearchStart = () => {
+    setIsLoading(true);
+  };
+
+  const handleSearchEnd = () => {
+    setIsLoading(false);
+  };
   return (
-    <main className="main">
-      <SearchBar onFilter={setFilteredResults} />
-      <Results results={filteredResults} />
-      <button className="back-to-top-btn" onClick={scrollToTop}>
-        <img src={upArrowIcon} alt="Back to Top" className="back-to-top-icon" />
-      </button>
+    <main className="main-container">
+      <section className="search-section">
+        <SearchBar 
+          onSearch={handleSearch} 
+          onSearchStart={handleSearchStart} 
+          onSearchEnd={handleSearchEnd}
+        />
+      </section>
+      
+      <section className="results-section">
+        <Results
+          results={filteredResults}
+          searchPerformed={searchPerformed}
+          isLoading={isLoading}
+          currentUser={currentUser}
+          submittingComment={submittingComment}
+          submittingReaction={submittingReaction}
+          newComments={newComments}
+          onCommentChange={handleCommentChange}
+          onCommentSubmit={handleCommentSubmit}
+          onReaction={handleReaction}
+          onDeleteComment={handleDeleteComment}
+          hasUserReacted={hasUserReacted}
+        />
+      </section>
+
+      <ScrollToTopButton />
     </main>
   );
 };

@@ -1,0 +1,164 @@
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.3s ease;
+}
+
+.dialog-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dialog-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.dialog-container {
+  background-color: #2a2f38;
+  border-radius: 1vh;
+  border-top: 0.5vh solid;
+  width: 90%;
+  max-width: 45vw;
+  color: #ffffff;
+  box-shadow: 0 0.4vh 2.5vh rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease;
+  overflow: hidden;
+}
+
+.dialog-overlay.visible .dialog-container {
+  transform: translateY(0);
+}
+
+.dialog-overlay.hidden .dialog-container {
+  transform: translateY(-2vh);
+}
+
+.dialog-container.error {
+  border-color: #ff4d4d;
+}
+
+.dialog-container.success {
+  border-color: #15cd2e;
+}
+
+.dialog-container.warning {
+  border-color: #ffb700;
+}
+
+.dialog-container.info {
+  border-color: #A500FF;
+}
+
+.dialog-header {
+  padding: 1.5vh 2vw;
+  border-bottom: 0.1vh solid #3a3f4b;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialog-title {
+  margin: 0;
+  font-size: 2vh;
+  font-weight: bold;
+}
+
+.dialog-close {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0;
+}
+
+.dialog-body {
+  padding: 2vh 2vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.dialog-icon {
+  margin-bottom: 1.5vh;
+}
+
+.dialog-message {
+  margin: 0;
+  font-size: 1.6vh;
+  line-height: 1.5;
+  color: #e0e0e0;
+}
+
+.dialog-footer {
+  padding: 1.5vh 2vw;
+  border-top: 0.1vh solid #3a3f4b;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1vw;
+}
+
+.dialog-button {
+  padding: 1vh 1.5vw;
+  border-radius: 0.4vh;
+  font-size: 1.5vh;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-width: 10vw;
+}
+
+.cancel-button {
+  background-color: #3a3f4b;
+  color: #ffffff;
+}
+
+.cancel-button:hover {
+  background-color: #4a4f5b;
+}
+
+.confirm-button {
+  color: #020d1f;
+}
+
+.confirm-button.success {
+  background-color: #15cd2e;
+}
+
+.confirm-button.success:hover {
+  background-color: #13af28;
+}
+
+.confirm-button.error {
+  background-color: #ff4d4d;
+}
+
+.confirm-button.error:hover {
+  background-color: #e63939;
+}
+
+.confirm-button.warning {
+  background-color: #ffb700;
+}
+
+.confirm-button.warning:hover {
+  background-color: #e6a500;
+}
+
+.confirm-button.info {
+  background-color: #A500FF;
+}
+
+.confirm-button.info:hover {
+  background-color: #8F00DB;
+}

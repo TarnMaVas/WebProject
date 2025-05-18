@@ -1,0 +1,70 @@
+.page-container {
+  font-family: 'Inter';
+  display: flex;
+  flex-direction: column;
+  padding: 3.24vh 9.375%;
+  align-items: center;
+  margin: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.page-title {
+  font-size: 4vh;
+  font-weight: bold;
+  color: #15cd2e;
+  margin-bottom: 1vh;
+  text-align: center;
+}
+
+.page-description {
+  font-size: 2vh;
+  color: #ffffff;
+  margin-bottom: 4vh;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.loading-spinner {
+  width: 6vh;
+  height: 6vh;
+  border: 0.8vh solid #1c1f26;
+  border-radius: 50%;
+  border-top: 0.8vh solid #A500FF;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  padding: 2vh;
+  background-color: rgba(255, 77, 77, 0.2);
+  border: 1px solid #ff4d4d;
+  color: #ff4d4d;
+  border-radius: 1vh;
+  text-align: center;
+  font-size: 2vh;
+  width: 80%;
+  max-width: 600px;
+  margin: 2vh auto;
+}
+
+.popular-page .page-title,
+.page-title.popular-title {
+  color: #15cd2e;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}

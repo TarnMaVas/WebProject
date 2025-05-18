@@ -1,36 +1,35 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "../styles/Results.css";
 import likeIcon from "../icons/thumb_up.svg";
 import dislikeIcon from "../icons/thumb_down.svg";
-import { addComment, updateSnippetReaction, deleteComment, migrateCommentsAddIds } from "../firebase/services";
-import { subscribeToAuthChanges } from "../firebase/auth";
+import { useDialog } from "./DialogProvider";
+import { useToast } from "./ToastProvider";
+import { useFavorites } from "../hooks/useFavorites";
 
-const Results = ({ results }) => {
-  const [resultsState, setResults] = useState(results);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [newComments, setNewComments] = useState({});
-  const [submittingComment, setSubmittingComment] = useState({});
-  const [submittingReaction, setSubmittingReaction] = useState({});
+const Results = ({ 
+  results, 
+  searchPerformed, 
+  isLoading, 
+  currentUser,
+  submittingComment,
+  submittingReaction,
+  newComments,
+  onCommentChange,
+  onCommentSubmit,
+  onReaction,
+  onDeleteComment,
+  hasUserReacted
+}) => {
   const [expandedSnippets, setExpandedSnippets] = useState({});
-
+  const dialog = useDialog();
+  const toast = useToast();
+  const { favoriteStatus, submittingFavorite, toggleFavorite, checkMultipleFavoriteStatus } = useFavorites(currentUser);
+  
   useEffect(() => {
-    setResults(results);
-  }, [results]);
-
-  useEffect(() => {
-    const unsubscribe = subscribeToAuthChanges(user => {
-      setCurrentUser(user);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const handleCommentChange = (snippetId, value) => {
-    setNewComments(prevState => ({
-      ...prevState,
-      [snippetId]: value
-    }));
-  };
+    if (results.length > 0 && currentUser) {
+      checkMultipleFavoriteStatus(results);
+    }
+  }, [results, currentUser, checkMultipleFavoriteStatus]);
 
   const toggleCommentSection = (snippetId) => {
     setExpandedSnippets(prevState => ({
@@ -38,159 +37,48 @@ const Results = ({ results }) => {
       [snippetId]: !prevState[snippetId]
     }));
   };
-
-  const handleCommentSubmit = async (snippetId) => {
-    if (!newComments[snippetId]?.trim()) return;
-
-    if (!currentUser) {
-      alert("Please log in to add comments");
-      return;
-    }
-
-    try {
-      setSubmittingComment(prevState => ({ ...prevState, [snippetId]: true }));
-
-      const updatedResult = { ...resultsState.find(result => result.id === snippetId) };
-      updatedResult.comments = [
-        ...updatedResult.comments || [],
-        {
-          author: currentUser.displayName || "Anonymous User",
-          authorId: currentUser.uid,
-          text: newComments[snippetId],
-          timestamp: new Date()
-        }
-      ];
-
-      setNewComments(prevState => ({
-        ...prevState,
-        [snippetId]: ""
-      }));
-
-      const updatedResults = resultsState.map(result =>
-        result.id === snippetId ? updatedResult : result
-      );
-      setResults(updatedResults);
-
-      await addComment(snippetId, updatedResult.comments[updatedResult.comments.length - 1]);
-
-    } catch (error) {
-      console.error("Error adding comment:", error);
-      alert("Failed to add comment. Please try again.");
-    } finally {
-      setSubmittingComment(prevState => ({ ...prevState, [snippetId]: false }));
-    }
-  };
-
-  const handleReaction = async (snippetId, isLike) => {
-    if (!currentUser) {
-      alert("Please log in to react to snippets");
-      return;
-    }
-
-    const existingReaction = resultsState.find(result => result.id === snippetId).userReactions?.[currentUser.uid];
-
-    try {
-      setSubmittingReaction(prevState => ({
-        ...prevState,
-        [snippetId + (isLike ? "_like" : "_dislike")]: true
-      }));
-
-      const updatedResult = { ...resultsState.find(result => result.id === snippetId) };
-
-      if (existingReaction) {
-        if (existingReaction === (isLike ? 'like' : 'dislike')) {
-          if (isLike) {
-            updatedResult.likes = Math.max((updatedResult.likes || 0) - 1, 0);
-          } else {
-            updatedResult.dislikes = Math.max((updatedResult.dislikes || 0) - 1, 0);
-          }
-          delete updatedResult.userReactions[currentUser.uid];
-        } else {
-          if (isLike) {
-            updatedResult.likes = (updatedResult.likes || 0) + 1;
-            updatedResult.dislikes = Math.max((updatedResult.dislikes || 0) - 1, 0);
-          } else {
-            updatedResult.dislikes = (updatedResult.dislikes || 0) + 1;
-            updatedResult.likes = Math.max((updatedResult.likes || 0) - 1, 0);
-          }
-          updatedResult.userReactions[currentUser.uid] = isLike ? 'like' : 'dislike';
-        }
-      } else {
-        if (isLike) {
-          updatedResult.likes = (updatedResult.likes || 0) + 1;
-        } else {
-          updatedResult.dislikes = (updatedResult.dislikes || 0) + 1;
-        }
-        updatedResult.userReactions = {
-          ...updatedResult.userReactions,
-          [currentUser.uid]: isLike ? 'like' : 'dislike'
-        };
-      }
-
-      setResults(prevState => prevState.map(result =>
-        result.id === snippetId ? updatedResult : result
-      ));
-
-      await updateSnippetReaction(snippetId, currentUser.uid, isLike ? 'like' : 'dislike');
-    } catch (error) {
-      console.error("Error updating reaction:", error);
-      alert("Failed to update reaction. Please try again.");
-    } finally {
-      setSubmittingReaction(prevState => ({
-        ...prevState,
-        [snippetId + (isLike ? "_like" : "_dislike")]: false
-      }));
-    }
-  };
-
-  const hasUserReacted = (snippet, isLike) => {
-    if (!currentUser || !snippet.userReactions) return false;
-
-    const userReaction = snippet.userReactions[currentUser.uid];
-    return userReaction === (isLike ? 'like' : 'dislike');
-  };
-
   const copyToClipboard = (code) => {
     navigator.clipboard.writeText(code)
       .then(() => {
-        alert("Code copied to clipboard!");
+        toast.showSuccess("Code copied to clipboard!");
       })
       .catch(err => {
         console.error("Failed to copy: ", err);
+        toast.showError("Failed to copy code. Please try again.");
       });
-  };
-
-  const handleDeleteComment = async (snippetId, commentId) => {
-    if (!currentUser) {
-      alert("You must be logged in to delete comments");
-      return;
-    }
-  
-    if (window.confirm("Are you sure you want to delete this comment?")) {
-      try {
-        await deleteComment(snippetId, commentId);
-        const updatedResults = resultsState.map(result => {
-          if (result.id === snippetId) {
-            result.comments = result.comments.filter(comment => comment.id !== commentId);
-          }
-          return result;
-        });
-        setResults(updatedResults);
-      } catch (error) {
-        console.error("Error deleting comment:", error);
-        alert("Failed to delete comment. Please try again.");
-      }
-    }
   };
 
   return (
     <div className="results-container">
-      {resultsState.length === 0 ? (
-        <h1 className="not-found-text">No fitting results found.</h1>
+      {isLoading ? (
+        <div className="search-message">
+          <div className="loading-spinner"></div>
+          <h2 className="loading-text">Searching...</h2>
+        </div>
+      ) : results.length === 0 ? (
+        searchPerformed ? (
+          <h2 className="not-found-text">No fitting results found.</h2>
+        ) : (
+          <div className="welcome-message">
+            <h2>Welcome to SnippetSearch!</h2>
+            <p>Search for code snippets using the search bar above...</p>
+          </div>
+        )
       ) : (
-        resultsState.map((result) => (
-          <div className="result-item" key={result.id}>
-            <h3 className="result-header">{result.title}</h3>
+        results.map((result) => (
+          <div className="result-item" key={result.id}>            <div className="result-header-row">
+              <h3 className="result-header">{result.title}</h3>
+              {currentUser && (
+                <button
+                  className={`favorite-button ${favoriteStatus[result.id] ? 'favorited' : ''}`}
+                  onClick={() => toggleFavorite(result.id)}
+                  disabled={submittingFavorite[result.id]}
+                  title={favoriteStatus[result.id] ? "Remove from favorites" : "Add to favorites"}
+                >
+                  {submittingFavorite[result.id] ? '...' : favoriteStatus[result.id] ? '★' : '☆'}
+                </button>
+              )}
+            </div>
             <p className="results-label">
               Author: <span className="result-author">{result.author}</span>
             </p>
@@ -216,7 +104,7 @@ const Results = ({ results }) => {
             <div className="result-reactions">
               <button
                 className={`reaction-button ${hasUserReacted(result, true) ? 'active' : ''}`}
-                onClick={() => handleReaction(result.id, true)}
+                onClick={() => onReaction(result.id, true)}
                 disabled={submittingReaction[result.id + "_like"]}
               >
                 <img src={likeIcon} alt="Like" className="review-icon" />
@@ -225,7 +113,7 @@ const Results = ({ results }) => {
 
               <button
                 className={`reaction-button ${hasUserReacted(result, false) ? 'active' : ''}`}
-                onClick={() => handleReaction(result.id, false)}
+                onClick={() => onReaction(result.id, false)}
                 disabled={submittingReaction[result.id + "_dislike"]}
               >
                 <img src={dislikeIcon} alt="Dislike" className="review-icon negative" />
@@ -253,10 +141,22 @@ const Results = ({ results }) => {
                           <p className="comment-timestamp">
                             {comment.timestamp ? new Date(comment.timestamp.seconds * 1000).toLocaleString() : ''}
                           </p>
-                          {currentUser && comment.authorId === currentUser?.uid && (
-                            <button
+                          {currentUser && comment.authorId === currentUser?.uid && (                            <button
                               className="delete-comment-button"
-                              onClick={() => handleDeleteComment(result.id, index)}
+                              onClick={() => {
+                                dialog.confirm(
+                                  'Are you sure you want to delete this comment?',
+                                  'Delete Comment',
+                                  {
+                                    type: 'error',
+                                    confirmText: 'Delete',
+                                    onConfirm: () => {
+                                      onDeleteComment(result.id, comment.id);
+                                      toast.showSuccess('Comment deleted successfully');
+                                    }
+                                  }
+                                );
+                              }}
                             >
                               Delete
                             </button>
@@ -272,12 +172,12 @@ const Results = ({ results }) => {
                     <textarea
                       placeholder="Add a comment..."
                       value={newComments[result.id] || ''}
-                      onChange={(e) => handleCommentChange(result.id, e.target.value)}
+                      onChange={(e) => onCommentChange(result.id, e.target.value)}
                       disabled={!currentUser}
                     />
                     <button
                       className="submit-comment-button"
-                      onClick={() => handleCommentSubmit(result.id)}
+                      onClick={() => onCommentSubmit(result.id)}
                       disabled={submittingComment[result.id] || !newComments[result.id]?.trim() || !currentUser}
                     >
                       {submittingComment[result.id] ? 'Posting...' : 'Post Comment'}
@@ -285,7 +185,7 @@ const Results = ({ results }) => {
                     {!currentUser && <p className="login-prompt">Please log in to add comments</p>}
                   </div>
                 </>
-              )}
+              )}            
             </div>
           </div>
         ))

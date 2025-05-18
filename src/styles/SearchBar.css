@@ -20,6 +20,12 @@
   transition: all 0.3s ease-in-out;
 }
 
+.search-bar:hover {
+  border-color: #39cf39;
+  box-shadow: 0 0 2vh #39cf39;
+  transition: all 0.3s ease-in-out;
+}
+
 .search-bar:focus {
   outline: none;
   border-color: #39cf39;
@@ -47,6 +53,7 @@
 
 .multi-select {
   width: 80%;
+  max-width: 23vw;
   color: #ffffff;
   transition: all 0.3s ease-in-out;
   padding: 0;
@@ -56,31 +63,38 @@
   outline: none;
   border-color: #39cf39;
   box-shadow: 0 0 2vh #39cf39;
+  transition: all 0.3s ease-in-out;
 }
 
-.multi-select .react-select__control {
-background-color: #1c1f26;
-border: 2px solid #5a5f69;
-height: 6.65vh;
+.multi-select .my-select__control {
+  background-color: #1c1f26;
+  border: 2px solid #5a5f69;
+  height: 6.65vh;
+  font-family: 'Inter', sans-serif; 
+  font-size: 2.15vh;
+  font-weight: 400;
+  overflow: hidden;
 }
 
-.search-bar-container .multi-select .react-select__control {
-  border-radius: 0 !important;
+.multi-select .my-select__control:hover {
+  border-color: #39cf39;
+  box-shadow: 0 0 2vh #39cf39;
+  transition: all 0.3s ease-in-out;
 }
 
-.multi-select .react-select__control--is-focused {
+.multi-select .my-select__control--is-focused {
 border-color: #39cf39;
 box-shadow: 0 0 2vh #39cf39;
 overflow: visible;
 z-index: 1;
 }
 
-.multi-select .react-select__menu {
+.multi-select .my-select__menu {
 background-color: #1c1f26;
 border-radius: 1vh;
 }
 
-.multi-select .react-select__option {
+.multi-select .my-select__option {
 color: #ffffff;
 padding: 1.2vh;
 font-size: 2.15vh;
@@ -88,54 +102,41 @@ transition: background 0.2s;
 cursor: pointer;
 }
 
-.multi-select .react-select__option--is-selected {
+.multi-select .my-select__option--is-selected {
 background-color: #15cd2e;
 color: #020d1f;
 }
 
-.multi-select .react-select__option--is-focused {
+.multi-select .my-select__option--is-focused {
 background-color: #39cf39;
 }
 
-.multi-select .react-select__multi-value {
+.multi-select .my-select__multi-value {
 background-color: #15cd2e;
 border-radius: 0.5vh;
+flex-shrink: 0;
 }
 
-.multi-select .react-select__multi-value__label {
+.multi-select .my-select__multi-value__label {
 color: #020d1f;
 }
 
-.multi-select .react-select__multi-value__remove {
+.multi-select .my-select__multi-value__remove {
 color: #020d1f;
 }
 
-.multi-select .react-select__multi-value__remove:hover {
+.multi-select .my-select__multi-value__remove:hover {
 background-color: #03ff03;
 color: #020d1f;
 }
 
-.multi-select .react-select__control {
-  background-color: #1c1f26 !important;
-  border: 2px solid #5a5f69 !important;
-  border-radius: 1.2vh !important;
-  font-family: 'Inter', sans-serif !important; 
-  font-size: 2.15vh !important;
-}
-
-.multi-select .react-select__input {
-  padding: 1.2vh 2vw !important;
-  font-family: 'Inter', sans-serif !important; 
-  font-size: 2.15vh !important;
-  color: #ffffff !important;
-  font-size: 2.15vh !important;
-}
-
-.multi-select .react-select__placeholder {
-  color: #ffffff !important;
-  font-size: 2.15vh !important;
-  font-family: 'Inter', sans-serif !important;
-  padding-left: 2vw !important;
-  opacity: 0.4 !important;
-  font-weight: 400 !important;
+.multi-select .my-select__value-container {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #39cf39 #1c1f26;
+  padding: 0.3vh 0.5vw;
+  display: flex;
+  align-items: center;
 }
