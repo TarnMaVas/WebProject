@@ -45,6 +45,15 @@ const AuthPopup = ({
           onClose();
         } else {
           setError(error);
+          if (error && error.toLowerCase().includes("email")) {
+            document.getElementById("email")?.focus();
+          } else if (
+            error &&
+            (error.toLowerCase().includes("password") ||
+              error.toLowerCase().includes("credential"))
+          ) {
+            document.getElementById("password")?.focus();
+          }
         }
       } else {
         const { user, error } = await registerUser(email, password, username);

@@ -88,12 +88,57 @@ export const uploadAvatar = async (imageFile) => {
   }
 };
 
-export const getAvatarUrl = (userId, options = {}) => {
+export const getAvatarUrl = async (userId, options = {}) => {
   const user = getCurrentUser();
   const uid = userId || user?.uid;
 
   if (!uid) {
     return null;
+  }
+
+  try {
+    const userDocRef = doc(db, "users", uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists() && userDoc.data().photoURL) {
+      const photoURL = userDoc.data().photoURL;
+
+      if (photoURL.includes("cloudinary")) {
+        const settings = {
+          size: "medium",
+          rounded: true,
+          ...options,
+        };
+
+        const sizes = {
+          small: "w_50,h_50",
+          medium: "w_200,h_200",
+          large: "w_500,h_500",
+        };
+
+        const size = sizes[settings.size] || sizes.medium;
+        const rounding = settings.rounded ? "r_max" : "";
+
+        const baseUrl = `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/image/upload`;
+        const transformation = `${size},c_fill,g_face,a_0${
+          rounding ? "," + rounding : ""
+        }`;
+
+        const urlParts = photoURL.split("/");
+        const publicIdIndex =
+          urlParts.findIndex((part) => part === "upload") + 1;
+
+        if (publicIdIndex < urlParts.length) {
+          const publicIdWithParams = urlParts.slice(publicIdIndex).join("/");
+          const publicId = publicIdWithParams.split("?")[0];
+          return `${baseUrl}/${transformation}/${publicId}`;
+        }
+      }
+
+      return photoURL;
+    }
+  } catch (error) {
+    console.debug("Error fetching avatar URL from document:", error);
   }
 
   const settings = {
@@ -116,19 +161,48 @@ export const getAvatarUrl = (userId, options = {}) => {
     rounding ? "," + rounding : ""
   }`;
 
-  if (user?.photoURL && user.photoURL.includes("cloudinary")) {
-    const urlParts = user.photoURL.split("/");
-    const publicIdIndex = urlParts.findIndex((part) => part === "upload") + 2;
-    if (publicIdIndex < urlParts.length) {
-      const publicId = urlParts.slice(publicIdIndex).join("/").split("?")[0];
-      return `${baseUrl}/${transformation}/${publicId}`;
-    }
+  if (!userId && user?.photoURL) {
+    return user.photoURL;
   }
 
-  const timestamp = new Date().getTime();
   const publicId = `user_avatars/avatar_${uid}`;
+  return `${baseUrl}/${transformation}/${publicId}`;
+};
 
-  return `${baseUrl}/${transformation}/${publicId}?t=${timestamp}`;
+export const getAvatarUrlSync = (userId, options = {}) => {
+  const user = getCurrentUser();
+  const uid = userId || user?.uid;
+
+  if (!uid) {
+    return null;
+  }
+
+  if (!userId && user?.photoURL) {
+    return user.photoURL;
+  }
+
+  const settings = {
+    size: "medium",
+    rounded: true,
+    ...options,
+  };
+
+  const sizes = {
+    small: "w_50,h_50",
+    medium: "w_200,h_200",
+    large: "w_500,h_500",
+  };
+
+  const size = sizes[settings.size] || sizes.medium;
+  const rounding = settings.rounded ? "r_max" : "";
+
+  const baseUrl = `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/image/upload`;
+  const transformation = `${size},c_fill,g_face,a_0${
+    rounding ? "," + rounding : ""
+  }`;
+
+  const publicId = `user_avatars/avatar_${uid}`;
+  return `${baseUrl}/${transformation}/${publicId}`;
 };
 
 export const getDefaultAvatar = (displayName = "", color = "15cd2e") => {

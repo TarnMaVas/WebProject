@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "../styles/Snippets.css";
 import { useSnippets } from "../hooks/useSnippets";
 import SnippetUploader from "./SnippetUploader";

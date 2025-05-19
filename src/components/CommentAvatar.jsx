@@ -1,21 +1,26 @@
-import { useState, useEffect } from "react";
-import { getAvatarUrl, getDefaultAvatar } from "../cloudinary/avatar";
+import { useState, useEffect, useCallback } from "react";
+import { getDefaultAvatar } from "../cloudinary/avatar";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase/config";
+import { checkCloudinaryAvatarExists } from "../cloudinary/avatar_helper";
 
 const CommentAvatar = ({ comment }) => {
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const getAuthorInfo = useCallback(() => {
+    const authorId = comment.authorId || (comment.author && comment.author.id);
+    const authorName = typeof comment.author === "object"
+      ? comment.author.name
+      : comment.author;
+    
+    return { authorId, authorName };
+  }, [comment]);
   useEffect(() => {
     const fetchAvatar = async () => {
       setLoading(true);
-
       try {
-        const authorId =
-          comment.authorId || (comment.author && comment.author.id);
-        const authorName =
-          typeof comment.author === "object"
-            ? comment.author.name
-            : comment.author;
+        const { authorId, authorName } = getAuthorInfo();
 
         console.debug("CommentAvatar - Author info:", {
           authorId,
@@ -24,20 +29,60 @@ const CommentAvatar = ({ comment }) => {
           commentAuthorId: comment.authorId,
         });
 
-        let avatarUrl;
+        const defaultAvatarUrl = getDefaultAvatar(authorName);
+        setAvatarUrl(defaultAvatarUrl);
+
         if (authorId) {
-          avatarUrl = getAvatarUrl(authorId);
+            try {
+
+            const userDocRef = doc(db, "users", authorId);
+            const userDoc = await getDoc(userDocRef);
+            
+            if (userDoc.exists() && userDoc.data().photoURL) {
+              const photoURL = userDoc.data().photoURL;
+              console.debug("CommentAvatar - Found photoURL in document:", photoURL);
+              setAvatarUrl(photoURL);
+              
+            } else {
+              const hasAvatar = await checkCloudinaryAvatarExists(authorId);
+              
+              if (hasAvatar) {
+                const cloudinaryConfig = {
+                  cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dthieumo8'
+                };
+                const baseUrl = `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/image/upload`;
+                const timestamp = new Date().getTime();
+                const publicId = `user_avatars/avatar_${authorId}`;
+                const cloudinaryUrl = `${baseUrl}/w_200,h_200,c_fill,g_face,a_0,r_max/${publicId}?t=${timestamp}`;
+                
+                console.debug("CommentAvatar - Using direct Cloudinary URL:", cloudinaryUrl);
+                setAvatarUrl(cloudinaryUrl);
+              } else {
+                console.debug("CommentAvatar - No avatar found, using default");
+              }
+            }
+          } catch (docError) {
+            console.debug("Error fetching user document:", docError);
+
+            const hasAvatar = await checkCloudinaryAvatarExists(authorId);
+            
+            if (hasAvatar) {
+              const cloudinaryConfig = {
+                cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dthieumo8'
+              };
+              const baseUrl = `https://res.cloudinary.com/${cloudinaryConfig.cloudName}/image/upload`;
+              const timestamp = new Date().getTime();
+              const publicId = `user_avatars/avatar_${authorId}`;
+              const cloudinaryUrl = `${baseUrl}/w_200,h_200,c_fill,g_face,a_0,r_max/${publicId}?t=${timestamp}`;
+              setAvatarUrl(cloudinaryUrl);
+            }
+          }
         } else {
-          avatarUrl = getDefaultAvatar(authorName);
+          console.debug("CommentAvatar - No author ID, using default avatar");
         }
-        console.debug("CommentAvatar - Got avatar URL:", avatarUrl);
-        setAvatarUrl(avatarUrl);
       } catch (error) {
         console.debug("Error fetching avatar:", error);
-        const authorName =
-          typeof comment.author === "object"
-            ? comment.author.name
-            : comment.author;
+        const { authorName } = getAuthorInfo();
         setAvatarUrl(getDefaultAvatar(authorName));
       } finally {
         setLoading(false);
@@ -45,15 +90,15 @@ const CommentAvatar = ({ comment }) => {
     };
 
     fetchAvatar();
-  }, [comment]);
-  const authorName =
-    typeof comment.author === "object" ? comment.author.name : comment.author;
+  }, [comment, getAuthorInfo]);
+
+  const { authorName } = getAuthorInfo();
 
   if (!comment) {
     console.debug("CommentAvatar - No comment data provided");
     return <div className="avatar-placeholder"></div>;
   }
-
+  
   return loading ? (
     <div className="avatar-placeholder"></div>
   ) : (
@@ -65,7 +110,16 @@ const CommentAvatar = ({ comment }) => {
       onError={(e) => {
         console.debug("CommentAvatar - Error loading image, using default");
         e.target.onerror = null;
-        e.target.src = getDefaultAvatar(authorName);
+        const defaultAvatar = getDefaultAvatar(authorName);
+        console.debug(
+          "CommentAvatar - Falling back to default:",
+          defaultAvatar
+        );
+        e.target.src = defaultAvatar;
+
+        if (avatarUrl !== defaultAvatar) {
+          setAvatarUrl(defaultAvatar);
+        }
       }}
     />
   );

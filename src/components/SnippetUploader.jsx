@@ -89,8 +89,8 @@ const SnippetUploader = ({ onUpload, isUploading, onClose }) => {
           </div>
 
           <div className="form-group">
-            <label>Tags (select at least one)</label>
-            <div className={`tags-selector ${errors.tags ? "error" : ""}`}>
+            <p className='description-p'>Tags (select at least one)</p>
+            <div id="tags-div" className={`tags-selector ${errors.tags ? "error" : ""}`}>
               {tagsLoading ? (
                 <div className="tags-loading">Loading tags...</div>
               ) : (

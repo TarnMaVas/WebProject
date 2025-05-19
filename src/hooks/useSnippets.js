@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useFirebaseWithNotifications } from "./useFirebaseWithNotifications";
 import { auth } from "../firebase/config";
 
@@ -52,7 +52,7 @@ export const useSnippets = () => {
     };
   }, [fetchSnippets]);
 
-  const handleUploadSnippet = async (snippetData) => {
+  const handleUploadSnippet = useCallback (async (snippetData) => {
     setUploading(true);
     try {
       const newSnippet = await uploadSnippet(snippetData);
@@ -64,12 +64,15 @@ export const useSnippets = () => {
     } finally {
       setUploading(false);
     }
-  };
+  }, [uploadSnippet]);
 
-  return {
-    snippets,
-    isLoading,
-    uploading,
-    uploadSnippet: handleUploadSnippet,
-  };
+  return useMemo(() => {
+    return {
+      snippets,
+      isLoading,
+      uploading,
+      uploadSnippet: handleUploadSnippet,
+    };
+  }, [snippets, isLoading, uploading, handleUploadSnippet]);
+
 };

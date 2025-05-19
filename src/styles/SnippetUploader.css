@@ -43,6 +43,13 @@
   margin-bottom: 0.8vh;
 }
 
+.description-p {
+  display: block;
+  color: white;
+  font-size: 1.6vh;
+  margin-bottom: 0.8vh;
+}
+
 .form-group input[type="text"],
 .form-group textarea {
   width: 100%;
@@ -82,16 +89,6 @@
   flex-wrap: wrap;
   gap: 0.8vh;
   align-items: center;
-}
-
-.tag {
-  background-color: #15cd2e22;
-  color: #15cd2e;
-  padding: 0.6vh 1vh;
-  border-radius: 2vh;
-  display: flex;
-  align-items: center;
-  font-size: 1.4vh;
 }
 
 .tag-remove {

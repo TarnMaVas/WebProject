@@ -297,8 +297,6 @@ export const deleteComment = async (snippetId, commentId) => {
     await updateDoc(snippetRef, {
       comments: updatedComments,
     });
-
-    console.log("Comment deleted successfully");
   } catch (error) {
     console.error("Error deleting comment:", error);
     throw new Error("Failed to delete comment");
@@ -326,11 +324,8 @@ export const migrateCommentsAddIds = async () => {
         await updateDoc(doc(db, "snippets", snippetDoc.id), {
           comments: updatedComments,
         });
-        console.log(`Updated comments for snippet: ${snippetDoc.id}`);
       }
     }
-
-    console.log("Comment ID migration complete.");
   } catch (error) {
     console.error("Migration failed:", error);
   }

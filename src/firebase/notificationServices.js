@@ -10,6 +10,9 @@ import {
   createSnippet as createSnippetBase,
   getUserSnippets as getUserSnippetsBase,
 } from "./services";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "./config";
+import { getCurrentUser } from "./auth";
 
 export const createEnhancedServices = (toast) => {
   const addToFavorites = async (snippetId) => {
@@ -44,16 +47,42 @@ export const createEnhancedServices = (toast) => {
       throw error;
     }
   };
-
   const updateSnippetReaction = async (snippetId, isLike) => {
     try {
-      const result = await updateSnippetReactionBase(snippetId, isLike);
-      if (isLike) {
-        toast.showSuccess("You liked this snippet");
+      const userId = getCurrentUser()?.uid;
+      const snippetRef = doc(db, "snippets", snippetId);
+      const snippetDoc = await getDoc(snippetRef);
+
+      if (snippetDoc.exists()) {
+        const snippetData = snippetDoc.data();
+        const userReactions = snippetData.userReactions || {};
+        const currentReaction = userReactions[userId];
+        const result = await updateSnippetReactionBase(snippetId, isLike);
+        
+        if (!currentReaction) {
+          if (isLike) {
+            toast.showSuccess("You liked this snippet");
+          } else {
+            toast.showInfo("You disliked this snippet");
+          }
+        } else if (currentReaction === (isLike ? "like" : "dislike")) {
+          if (isLike) {
+            toast.showInfo("You removed your like");
+          } else {
+            toast.showInfo("You removed your dislike");
+          }
+        } else {
+          if (isLike) {
+            toast.showSuccess("You changed your reaction to like");
+          } else {
+            toast.showInfo("You changed your reaction to dislike");
+          }
+        }
+
+        return result;
       } else {
-        toast.showInfo("You disliked this snippet");
+        throw new Error("Snippet not found");
       }
-      return result;
     } catch (error) {
       toast.showError(error.message || "Failed to update reaction");
       throw error;
