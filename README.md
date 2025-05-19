@@ -1,70 +1,96 @@
-# Getting Started with Create React App
+# SnippetSearch
+
+**SnippetSearch** is a web-based platform designed for exploring, filtering, and engaging with code snippets. It provides a user-friendly interface for searching content by tags or keywords, and includes features for user authentication and interaction with shared code.
+
+---
+
+## Features
+
+- User registration and login  
+- Secure authentication with Firebase  
+- Search functionality with tag-based filtering  
+- Support for commenting and feedback on snippets  
+- Dynamic content rendering based on user state  
+- Responsive interface styled with CSS and component-based layout  
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18+ recommended)  
+- Firebase project with Authentication and Storage enabled  
+- Google Cloud SDK (optional, for advanced configuration)  
+
+---
+
+### Installation
+
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/TarnMaVas/WebProject.git
+cd WebProject
+```
+
+2. **Install dependencies**
+
+```bash
+npm install \
+  react@^19.1.0 \
+  react-dom@^19.1.0 \
+  react-scripts@^5.0.1 \
+  firebase@^11.6.1 \
+  react-select@^5.10.1 \
+  @testing-library/react@^16.2.0 \
+  @testing-library/jest-dom@^6.6.3 \
+  @testing-library/user-event@^13.5.0 \
+  @testing-library/dom@^10.4.0 \
+  web-vitals@^2.1.4
+
+npm install
+```
+
+3. **Set up Firebase**
+
+Configure `src/firebase/config.js` with your Firebase project's credentials:
+
+```js
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+
+const firebaseConfig = {
+  apiKey: '...',
+  authDomain: '...',
+  projectId: '...',
+  storageBucket: '...',
+  messagingSenderId: '...',
+  appId: '...'
+};
+
+const app = initializeApp(firebaseConfig);
+
+export const auth = getAuth(app);
+```
+
+### CORS Configuration
+
+To enable secure access to Firebase Storage resources, configure CORS using the [Google Cloud CLI](https://cloud.google.com/sdk) and the provided cors.json file:
+
+```bash
+gcloud init
+gcloud storage buckets update gs://<your-bucket-name> --cors-file=cors.json
+```
+
+## Development
+
+To start the application locally:
+
+```bash
+npm start
+```
+
+## License
+
+This project is licensed under the MIT License.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
