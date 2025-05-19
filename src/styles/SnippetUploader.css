@@ -1,0 +1,238 @@
+.snippet-uploader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fade-in 0.3s forwards;
+}
+
+.snippet-uploader {
+  background-color: #1e2128;
+  border-radius: 1vh;
+  padding: 3vh;
+  width: 80vw;
+  max-width: 70vh;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0.5vh 2vh rgba(0, 0, 0, 0.5);
+  animation: slide-up 0.3s forwards;
+}
+
+.snippet-uploader h2 {
+  color: white;
+  margin-bottom: 3vh;
+  font-size: 2.5vh;
+  border-bottom: 0.2vh solid #15cd2e;
+  padding-bottom: 1vh;
+}
+
+.form-group {
+  margin-bottom: 2vh;
+}
+
+.form-group label {
+  display: block;
+  color: white;
+  font-size: 1.6vh;
+  margin-bottom: 0.8vh;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+  width: 100%;
+  padding: 1.2vh;
+  border-radius: 0.6vh;
+  background-color: #2a2f38;
+  border: 0.1vh solid #3a3f48;
+  color: white;
+  font-size: 1.5vh;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.form-group input[type="text"].error,
+.form-group textarea.error,
+.tag-input.error {
+  border-color: #ff1744;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus,
+.tag-input:focus {
+  border-color: #15cd2e;
+  outline: none;
+}
+
+.tags-input-container {
+  padding: 0.8vh 1.2vh;
+  border-radius: 0.6vh;
+  background-color: #2a2f38;
+  border: 0.1vh solid #3a3f48;
+  min-height: 5vh;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8vh;
+  align-items: center;
+}
+
+.tag {
+  background-color: #15cd2e22;
+  color: #15cd2e;
+  padding: 0.6vh 1vh;
+  border-radius: 2vh;
+  display: flex;
+  align-items: center;
+  font-size: 1.4vh;
+}
+
+.tag-remove {
+  background: none;
+  border: none;
+  color: #15cd2e;
+  cursor: pointer;
+  margin-left: 0.6vh;
+  font-size: 1.8vh;
+  line-height: 1;
+  font-weight: bold;
+}
+
+.tag-input {
+  background: none;
+  border: none;
+  color: white;
+  flex-grow: 1;
+  padding: 0.6vh 0;
+  font-size: 1.4vh;
+  min-width: 10vh;
+}
+
+.tag-input:focus {
+  outline: none;
+}
+
+.helper-text {
+  font-size: 1.2vh;
+  color: #aaa;
+  margin-top: 0.6vh;
+  display: block;
+}
+
+.error-text {
+  color: #ff1744;
+  font-size: 1.2vh;
+  margin-top: 0.6vh;
+  display: block;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.5vh;
+  margin-top: 3vh;
+}
+
+.cancel-btn,
+.upload-btn {
+  padding: 1vh 2vh;
+  border-radius: 0.6vh;
+  font-size: 1.5vh;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.cancel-btn {
+  background-color: transparent;
+  border: 0.1vh solid #888;
+  color: #aaa;
+}
+
+.upload-btn {
+  background-color: #15cd2e;
+  border: none;
+  color: #000;
+  font-weight: 500;
+}
+
+.cancel-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.upload-btn:hover {
+  background-color: #13b629;
+  transform: translateY(-0.2vh);
+}
+
+.upload-btn:disabled {
+  background-color: #0f9021;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.tags-selector {
+  background-color: #2a2f38;
+  border: 0.1vh solid #3a3f48;
+  padding: 1.5vh;
+  border-radius: 0.6vh;
+  min-height: 10vh;
+  max-height: 20vh;
+  overflow-y: auto;
+}
+
+.tags-selector.error {
+  border-color: #ff1744;
+}
+
+.available-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1vh;
+  align-items: center;
+}
+
+.tag-option {
+  background-color: #353a45;
+  color: #ddd;
+  border: 0.1vh solid #45494f;
+  padding: 0.7vh 1.2vh;
+  border-radius: 2vh;
+  font-size: 1.4vh;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag-option:hover {
+  background-color: #404550;
+  transform: translateY(-0.2vh);
+}
+
+.tag-option.selected {
+  background-color: #15cd2e22;
+  color: #15cd2e;
+  border-color: #15cd2e;
+}
+
+.tags-loading {
+  color: #aaa;
+  font-style: italic;
+  padding: 2vh;
+  text-align: center;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(5vh); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

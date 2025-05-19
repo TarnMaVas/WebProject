@@ -1,22 +1,22 @@
-import { useState } from 'react';
-import { addComment, updateSnippetReaction, deleteComment } from '../firebase/services';
+import { useState, useCallback, useMemo } from 'react';
+import { useFirebaseWithNotifications } from './useFirebaseWithNotifications';
 import { useToast } from '../components/ToastProvider';
-import { useDialog } from '../components/DialogProvider';
 
 export const useSnippetInteractions = (currentUser, snippets, setSnippets) => {
   const [submittingComment, setSubmittingComment] = useState({});
   const [submittingReaction, setSubmittingReaction] = useState({});
   const [newComments, setNewComments] = useState({});
   const toast = useToast();
-  const dialog = useDialog();
+  const { addComment, updateSnippetReaction, deleteComment } = useFirebaseWithNotifications();
 
-  const handleCommentChange = (snippetId, value) => {
+  const handleCommentChange = useCallback((snippetId, value) => {
     setNewComments(prevState => ({
       ...prevState,
       [snippetId]: value
     }));
-  };
-  const handleCommentSubmit = async (snippetId) => {
+  }, []);
+
+  const handleCommentSubmit = useCallback(async (snippetId) => {
     if (!newComments[snippetId]?.trim()) return;
 
     if (!currentUser) {
@@ -27,15 +27,20 @@ export const useSnippetInteractions = (currentUser, snippets, setSnippets) => {
     try {
       setSubmittingComment(prevState => ({ ...prevState, [snippetId]: true }));
 
+      const commentData = {
+        author: {
+          id: currentUser.uid,
+          name: currentUser.displayName || "Anonymous User",
+          photoURL: currentUser.photoURL || null
+        },
+        text: newComments[snippetId],
+        timestamp: new Date()
+      };
+
       const updatedResult = { ...snippets.find(result => result.id === snippetId) };
       updatedResult.comments = [
         ...updatedResult.comments || [],
-        {
-          author: currentUser.displayName || "Anonymous User",
-          authorId: currentUser.uid,
-          text: newComments[snippetId],
-          timestamp: new Date()
-        }
+        commentData
       ];
 
       setNewComments(prevState => ({
@@ -48,16 +53,18 @@ export const useSnippetInteractions = (currentUser, snippets, setSnippets) => {
       );
       setSnippets(updatedResults);
 
-      await addComment(snippetId, updatedResult.comments[updatedResult.comments.length - 1]);    } catch (error) {
+      await addComment(snippetId, commentData);
+    } catch (error) {
       console.error("Error adding comment:", error);
-      toast.showError("Failed to add comment. Please try again.");
+
     } finally {
       setSubmittingComment(prevState => ({ ...prevState, [snippetId]: false }));
     }
-  };
+  }, [currentUser, snippets, newComments, toast, addComment, setSnippets]);
 
-  const handleReaction = async (snippetId, isLike) => {
+  const handleReaction = useCallback(async (snippetId, isLike) => {
     if (!currentUser) {
+      toast.showWarning("Please log in to react to snippets");
       return;
     }
 
@@ -99,50 +106,84 @@ export const useSnippetInteractions = (currentUser, snippets, setSnippets) => {
           ...updatedResult.userReactions,
           [currentUser.uid]: isLike ? 'like' : 'dislike'
         };
-      }      setSnippets(prevState => prevState.map(result =>
+      }
+      
+      setSnippets(prevState => prevState.map(result =>
         result.id === snippetId ? updatedResult : result
       ));
 
       await updateSnippetReaction(snippetId, isLike);
     } catch (error) {
       console.error("Error updating reaction:", error);
-      toast.showError("Failed to update reaction. Please try again.");
     } finally {
       setSubmittingReaction(prevState => ({
         ...prevState,
         [snippetId + (isLike ? "_like" : "_dislike")]: false
       }));
     }
-  };  const handleDeleteComment = async (snippetId, commentId) => {
+  }, [currentUser, snippets, updateSnippetReaction, toast, setSnippets]);
+
+  const handleDeleteComment = useCallback(async (snippetId, commentId) => {
     if (!currentUser) {
       toast.showWarning("Please log in to manage comments");
       return;
     }
   
     try {
-      await deleteComment(snippetId, commentId);
+      const snippet = snippets.find(result => result.id === snippetId);
+      if (!snippet) {
+        toast.showError("Snippet not found");
+        return;
+      }
+      
+      const comment = snippet.comments?.find(c => c.id === commentId);
+      if (!comment) {
+        toast.showError("Comment not found");
+        return;
+      }
+      const authorId = comment.author?.id || comment.authorId;
+      const isAuthor = authorId === currentUser.uid || 
+                       (!authorId && comment.author === currentUser.displayName) || 
+                       currentUser.email?.includes("admin");
+      
+      if (!isAuthor) {
+        console.log("Cannot delete - Comment data:", comment, "Current user:", currentUser.uid);
+        toast.showWarning("You can only delete your own comments");
+        return;
+      }
+
       const updatedResults = snippets.map(result => {
         if (result.id === snippetId) {
-          result.comments = result.comments.filter(comment => comment.id !== commentId);
+          return {
+            ...result,
+            comments: (result.comments || []).filter(comment => comment.id !== commentId)
+          };
         }
         return result;
       });
       setSnippets(updatedResults);
-      toast.showSuccess("Comment deleted successfully");
+
+      await deleteComment(snippetId, commentId);
     } catch (error) {
       console.error("Error deleting comment:", error);
-      toast.showError("Failed to delete comment. Please try again.");
-    }
-  };
 
-  const hasUserReacted = (snippet, isLike) => {
+      const snippetDoc = snippets.find(s => s.id === snippetId);
+      if (snippetDoc) {
+        setSnippets(prev => prev.map(s => 
+          s.id === snippetId ? snippetDoc : s
+        ));
+      }
+    }
+  }, [currentUser, snippets, toast, deleteComment, setSnippets]);
+
+  const hasUserReacted = useCallback((snippet, isLike) => {
     if (!currentUser || !snippet.userReactions) return false;
 
     const userReaction = snippet.userReactions[currentUser.uid];
     return userReaction === (isLike ? 'like' : 'dislike');
-  };
+  }, [currentUser]);
 
-  return {
+  return useMemo(() => ({
     submittingComment,
     submittingReaction,
     newComments,
@@ -151,5 +192,14 @@ export const useSnippetInteractions = (currentUser, snippets, setSnippets) => {
     handleReaction,
     handleDeleteComment,
     hasUserReacted
-  };
+  }), [
+    submittingComment,
+    submittingReaction,
+    newComments,
+    handleCommentChange,
+    handleCommentSubmit,
+    handleReaction, 
+    handleDeleteComment,
+    hasUserReacted
+  ]);
 };

@@ -5,14 +5,12 @@ import "../styles/Main.css";
 import { subscribeToAuthChanges } from "../firebase/auth";
 import { useSnippetInteractions } from "../hooks/useSnippetInteractions";
 import ScrollToTopButton from "./ScrollToTopButton";
-import { useToast } from "./ToastProvider";
 
 const Main = () => {
   const [filteredResults, setFilteredResults] = useState([]);
   const [searchPerformed, setSearchPerformed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const toast = useToast();
 
   useEffect(() => {
     const unsubscribe = subscribeToAuthChanges(user => {
@@ -21,6 +19,7 @@ const Main = () => {
 
     return () => unsubscribe();
   }, []);
+
   const handleSearch = (results) => {
     setFilteredResults(results);
     setSearchPerformed(true);
@@ -44,6 +43,7 @@ const Main = () => {
   const handleSearchEnd = () => {
     setIsLoading(false);
   };
+
   return (
     <main className="main-container">
       <section className="search-section">
@@ -51,6 +51,7 @@ const Main = () => {
           onSearch={handleSearch} 
           onSearchStart={handleSearchStart} 
           onSearchEnd={handleSearchEnd}
+          isLoading={isLoading}
         />
       </section>
       

@@ -1,11 +1,9 @@
-import React from 'react';
 import '../styles/Header.css';
 import ProfileIcon from './ProfileIcon';
 import { Link, useLocation } from 'react-router-dom';
 
 const Header = ({}) => {
-  const location = useLocation();
-  const currentPath = location.pathname;
+  const currentPath = useLocation().pathname;
   
   return (
     <header className="header">

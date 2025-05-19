@@ -5,6 +5,7 @@ import dislikeIcon from "../icons/thumb_down.svg";
 import { useDialog } from "./DialogProvider";
 import { useToast } from "./ToastProvider";
 import { useFavorites } from "../hooks/useFavorites";
+import { getDefaultAvatar } from '../cloudinary/avatar';
 
 const Results = ({ 
   results, 
@@ -21,9 +22,9 @@ const Results = ({
   hasUserReacted
 }) => {
   const [expandedSnippets, setExpandedSnippets] = useState({});
+  const { favoriteStatus, submittingFavorite, toggleFavorite, checkMultipleFavoriteStatus } = useFavorites(currentUser);
   const dialog = useDialog();
   const toast = useToast();
-  const { favoriteStatus, submittingFavorite, toggleFavorite, checkMultipleFavoriteStatus } = useFavorites(currentUser);
   
   useEffect(() => {
     if (results.length > 0 && currentUser) {
@@ -37,6 +38,7 @@ const Results = ({
       [snippetId]: !prevState[snippetId]
     }));
   };
+
   const copyToClipboard = (code) => {
     navigator.clipboard.writeText(code)
       .then(() => {
@@ -66,7 +68,8 @@ const Results = ({
         )
       ) : (
         results.map((result) => (
-          <div className="result-item" key={result.id}>            <div className="result-header-row">
+          <div className="result-item" key={result.id}>
+          <div className="result-header-row">
               <h3 className="result-header">{result.title}</h3>
               {currentUser && (
                 <button
@@ -79,9 +82,30 @@ const Results = ({
                 </button>
               )}
             </div>
-            <p className="results-label">
-              Author: <span className="result-author">{result.author}</span>
-            </p>
+            <div className="author-info">
+              <div className="author-avatar-container">
+                {result.authorPhotoURL ? (
+                  <img 
+                    src={result.authorPhotoURL} 
+                    alt={`${result.author}'s avatar`}
+                    className="author-avatar"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = getDefaultAvatar(result.author);
+                    }}
+                  />
+                ) : (
+                  <img 
+                    src={getDefaultAvatar(result.author)} 
+                    alt={`${result.author}'s avatar`}
+                    className="author-avatar"
+                  />
+                )}
+              </div>
+              <p className="results-label">
+                Author: <span className="result-author">{result.author}</span>
+              </p>
+            </div>
 
             <div className="code-container">
               <pre className="result-code">{result.code}</pre>
@@ -136,30 +160,61 @@ const Results = ({
                     {result.comments && result.comments.length > 0 ? (
                       result.comments.map((comment, index) => (
                         <div className="comment" key={index}>
-                          <p className="comment-author">{comment.author}:</p>
+                          <div className="comment-header">
+                            <div className="comment-author-avatar">
+                              {comment.authorPhotoURL ? (
+                                <img 
+                                  src={comment.authorPhotoURL} 
+                                  alt={`${typeof comment.author === 'object' ? comment.author.name : comment.author}'s avatar`}
+                                  className="comment-avatar-img"
+                                  onError={(e) => {
+                                    e.target.onerror = null; // Prevent infinite loop
+                                    e.target.src = getDefaultAvatar(typeof comment.author === 'object' ? comment.author.name : comment.author);
+                                  }}
+                                />
+                              ) : (
+                                <img 
+                                  src={getDefaultAvatar(typeof comment.author === 'object' ? comment.author.name : comment.author)} 
+                                  alt={`${typeof comment.author === 'object' ? comment.author.name : comment.author}'s avatar`}
+                                  className="comment-avatar-img"
+                                />
+                              )}
+                            </div>
+                            <p className="comment-author">{typeof comment.author === 'object' ? comment.author.name : comment.author}:</p>
+                          </div>
                           <p className="comment-text">{comment.text}</p>
                           <p className="comment-timestamp">
-                            {comment.timestamp ? new Date(comment.timestamp.seconds * 1000).toLocaleString() : ''}
-                          </p>
-                          {currentUser && comment.authorId === currentUser?.uid && (                            <button
-                              className="delete-comment-button"
-                              onClick={() => {
-                                dialog.confirm(
-                                  'Are you sure you want to delete this comment?',
-                                  'Delete Comment',
-                                  {
-                                    type: 'error',
-                                    confirmText: 'Delete',
-                                    onConfirm: () => {
-                                      onDeleteComment(result.id, comment.id);
-                                      toast.showSuccess('Comment deleted successfully');
+                            {comment.timestamp ? 
+                              (comment.timestamp.seconds ? 
+                                new Date(comment.timestamp.seconds * 1000).toLocaleString() : 
+                                new Date(comment.timestamp).toLocaleString()
+                              ) : ''}
+                          </p>{currentUser && (
+                            (comment.author?.id === currentUser?.uid || 
+                             comment.authorId === currentUser?.uid ||
+                             (!comment.author?.id && !comment.authorId && 
+                              typeof comment.author === 'string' && 
+                              comment.author === currentUser?.displayName) ||
+                             currentUser?.email?.includes("admin")) ? (
+                              <button
+                                className="delete-comment-button"
+                                onClick={() => {
+                                  dialog.confirm(
+                                    'Are you sure you want to delete this comment?',
+                                    'Delete Comment',
+                                    {
+                                      type: 'error',
+                                      confirmText: 'Delete',
+                                      onConfirm: () => {
+                                        onDeleteComment(result.id, comment.id);
+                                      }
                                     }
-                                  }
-                                );
-                              }}
-                            >
-                              Delete
-                            </button>
+                                  );
+                                }}
+                              >
+                                Delete
+                              </button>
+                            ) : null
                           )}
                         </div>
                       ))

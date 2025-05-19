@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../styles/AuthPopup.css';
 import { useFirebaseWithNotifications } from '../hooks/useFirebaseWithNotifications';
 
-const AuthPopup = ({ isOpen, onClose, onAuthSuccess }) => {
-  const [isLogin, setIsLogin] = useState(true);
+const AuthPopup = ({ isOpen, onClose, onAuthSuccess, initialTab = 'login' }) => {
+  const [isLogin, setIsLogin] = useState(initialTab === 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -12,6 +12,10 @@ const AuthPopup = ({ isOpen, onClose, onAuthSuccess }) => {
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const { registerUser, loginUser, resetPassword } = useFirebaseWithNotifications();
+
+  useEffect(() => {
+    setIsLogin(initialTab === 'login');
+  }, [initialTab]);
 
   if (!isOpen) return null;
 

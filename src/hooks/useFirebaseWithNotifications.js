@@ -1,16 +1,18 @@
-// Custom hook for using Firebase services with toast notifications
 import { useToast } from '../components/ToastProvider';
-import { useDialog } from '../components/DialogProvider';
 import { createEnhancedServices } from '../firebase/notificationServices';
 import { createEnhancedAuthServices } from '../firebase/notificationAuth';
+import { useMemo } from 'react';
 
 export const useFirebaseWithNotifications = () => {
   const toast = useToast();
-  const dialog = useDialog();
 
-  const enhancedServices = createEnhancedServices(toast, dialog);
+  const enhancedServices = useMemo(() => {
+    return createEnhancedServices(toast)
+  }, [toast]);
 
-  const enhancedAuthServices = createEnhancedAuthServices(toast);
+  const enhancedAuthServices = useMemo(() => {
+    return createEnhancedAuthServices(toast);
+  }, [toast]);
 
   return {
     ...enhancedServices,

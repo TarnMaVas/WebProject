@@ -1,0 +1,32 @@
+.back-to-top-btn {
+  position: fixed;
+  bottom: 2vh;
+  right: 2vw;
+  padding: 1vh 2vw;
+  font-size: 2vh;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #15cd2e;
+  border: none;
+  border-radius: 1vh;
+  cursor: pointer;
+  box-shadow: 0 0 1vh rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+  z-index: 999;
+}
+
+.back-to-top-btn:hover {
+  background-color: #03ff03;
+  box-shadow: 0 0 1.5vh rgba(0, 0, 0, 0.3);
+}
+
+.back-to-top-btn:active {
+  transform: scale(0.95);
+}
+
+.back-to-top-icon {
+  width: 2.5vh;
+  height: 2.5vh;
+  display: inline-block;
+  vertical-align: middle;
+}

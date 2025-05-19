@@ -5,12 +5,12 @@ import { getOptions } from '../firebase/services';
 import { useToast } from './ToastProvider';
 import { useFirebaseWithNotifications } from '../hooks/useFirebaseWithNotifications';
 
-const SearchBar = ({ onSearch, onSearchStart, onSearchEnd }) => {
+const SearchBar = ({ onSearch, onSearchStart, onSearchEnd, isLoading }) => {
   const [searchText, setSearchText] = useState('');
-  const [selectedTags, setSelectedTags] = useState([]);  const [groupedOptions, setGroupedOptions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const toast = useToast();
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [groupedOptions, setGroupedOptions] = useState([]);
   const { filterSnippets } = useFirebaseWithNotifications();
+  const toast = useToast();
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -20,11 +20,11 @@ const SearchBar = ({ onSearch, onSearchStart, onSearchEnd }) => {
     
     fetchOptions();
   }, []);
+
   const handleSearch = async () => {
     if (onSearchStart) {
       onSearchStart();
     }
-    setIsLoading(true);
     
     try {
       const filteredResults = await filterSnippets(searchText, selectedTags);
@@ -39,7 +39,6 @@ const SearchBar = ({ onSearch, onSearchStart, onSearchEnd }) => {
       console.error('Search error:', error);
       toast.showError('An error occurred while searching. Please try again.');
     } finally {
-      setIsLoading(false);
       if (onSearchEnd) {
         onSearchEnd();
       }

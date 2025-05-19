@@ -134,6 +134,40 @@ export const updateSnippetReaction = async (snippetId, isLike) => {
     return updatedSnippet;
   } catch (error) {
     console.error('Error updating reaction:', error);
+    throw error;  }
+};
+
+export const createSnippet = async (snippetData) => {
+  try {
+    const user = getCurrentUser();
+    if (!user) {
+      throw new Error('You must be logged in to create a snippet');
+    }
+    
+    const snippetRef = doc(collection(db, 'snippets'));
+    const timestamp = Timestamp.now();
+    
+    const newSnippet = {
+      id: snippetRef.id,
+      title: snippetData.title,
+      code: snippetData.code,
+      tags: snippetData.tags,
+      author: user.displayName || 'Anonymous',
+      authorId: user.uid,
+      authorPhotoURL: user.photoURL || null,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      likes: 0,
+      dislikes: 0,
+      userReactions: {},
+      comments: []
+    };
+    
+    await setDoc(snippetRef, newSnippet);
+    
+    return newSnippet;
+  } catch (error) {
+    console.error('Error creating snippet:', error);
     throw error;
   }
 };
@@ -153,6 +187,33 @@ export const getSnippetWithDetails = async (snippetId) => {
     };
   } catch (error) {
     console.error('Error fetching snippet details:', error);
+    throw error;
+  }
+};
+
+export const getUserSnippets = async () => {
+  try {
+    const user = getCurrentUser();
+    if (!user) {
+      return [];
+    }
+    
+    const snippetsCollection = collection(db, 'snippets');
+    const snippetsSnapshot = await getDocs(snippetsCollection);
+    
+    const userSnippets = snippetsSnapshot.docs
+      .map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      .filter(snippet => snippet.authorId === user.uid)
+      .sort((a, b) => {
+        return b.createdAt?.seconds - a.createdAt?.seconds || 0;
+      });
+    
+    return userSnippets;
+  } catch (error) {
+    console.error('Error fetching user snippets:', error);
     throw error;
   }
 };

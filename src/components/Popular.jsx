@@ -5,7 +5,6 @@ import { subscribeToAuthChanges } from "../firebase/auth";
 import { useSnippetInteractions } from "../hooks/useSnippetInteractions";
 import ScrollToTopButton from "./ScrollToTopButton";
 import { useToast } from "./ToastProvider";
-import { useDialog } from "./DialogProvider";
 import { useFirebaseWithNotifications } from "../hooks/useFirebaseWithNotifications";
 
 const Popular = () => {  const [snippets, setSnippets] = useState([]);
@@ -28,17 +27,16 @@ const Popular = () => {  const [snippets, setSnippets] = useState([]);
       try {
         setIsLoading(true);
         const popularSnippets = await getPopularSnippets();
-        setSnippets(popularSnippets);      } catch (err) {
+        setSnippets(popularSnippets);      
+      } catch (err) {
         console.error("Error fetching popular snippets:", err);
         setError("Failed to load popular snippets. Please try again later.");
         toast.showError("Failed to load popular snippets. Please try again.");
       } finally {
         setIsLoading(false);
       }
-    };
-
-    fetchPopularSnippets();
-  }, []);
+    };    fetchPopularSnippets();
+  }, [getPopularSnippets, toast]);
   
   const {
     submittingComment,

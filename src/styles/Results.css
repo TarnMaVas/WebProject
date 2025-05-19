@@ -19,7 +19,7 @@
 }
 
 .result-header {
-    font-size: 3.5vh;
+    font-size: 4vh;
     font-weight: bold;
     margin-bottom: 1vh;
     margin-top: 1vh;
@@ -36,7 +36,7 @@
     background: transparent;
     border: none;
     color: #f8d71c;
-    font-size: 2.4vh;
+    font-size: 3.5vh;
     cursor: pointer;
     padding: 0.5vh 1vw;
     border-radius: 0.4vh;
@@ -57,7 +57,6 @@
 
 .favorite-button:disabled {
     opacity: 0.5;
-    cursor: wait;
 }
 
 .result-code {
@@ -73,7 +72,7 @@
 }
 
 .result-tags {
-    margin-top: 3vh;
+    margin-top: 0.5vh;
     display: flex;
     gap: 1vh;
     flex-wrap: wrap;
@@ -81,7 +80,7 @@
 }
 
 .results-label {
-    font-size: 1.8vh;
+    font-size: 2vh;
     font-weight: bold;
     color: #ffffff;
     margin-right: 1vh;
@@ -127,10 +126,11 @@
 }
 
 .comments-label {
-    font-size: 1.8vh;
+    font-size: 2vh;
     font-weight: bold;
     color: #ffffff;
-    margin-bottom: 1vh;
+    margin-bottom: 1.5vh;
+    margin-top: 1.5vh;
 }
 
 .comment {
@@ -141,11 +141,10 @@
 }
 
 .comment-author {
-    margin-top: 0.5vh;
     font-size: 1.8vh;
     font-weight: bold;
     color: #39cf39;
-    margin-bottom: 0.5vh;
+    margin: 0;
 }
 
 .comment-text {
@@ -154,8 +153,35 @@
     margin: 0;
 }
 
+.author-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5vh;
+}
+
+.author-avatar-container {
+    width: 5vh;
+    height: 5vh;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 1vh;
+    border: 0.1vh solid #39cf39;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.result-item .author-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 0;
+}
+
 .result-author {
-    font-size: 1.8vh;
+    font-size: 2vh;
     font-weight: bold;
     color: #A500FF;
     margin-bottom: 1vh;
@@ -239,8 +265,8 @@
     color: #020d1f;
     border: none;
     border-radius: 0.5vh;
-    padding: 0.5vh 1vh;
-    font-size: 1.6vh;
+    padding: 0.8vh 1vh;
+    font-size: 1.8vh;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -254,7 +280,7 @@
   .result-reactions {
     display: flex;
     gap: 1.5vh;
-    margin-top: 2vh;
+    margin-top: 1vh;
   }
   
   .reaction-button {
@@ -264,7 +290,7 @@
     background-color: #1c1f26;
     border: 0.1vh solid #5a5f69;
     border-radius: 0.5vh;
-    padding: 0.5vh 1vh;
+    padding: 0.8vh 1.2vh;
     color: #ffffff;
     font-size: 1.6vh;
     cursor: pointer;
@@ -309,7 +335,7 @@
     border: 0.1vh solid #5a5f69;
     border-radius: 0.5vh;
     padding: 0.8vh 1.2vh;
-    font-size: 1.6vh;
+    font-size: 1.8vh;
     cursor: pointer;
     transition: all 0.2s ease;
   }
@@ -324,6 +350,33 @@
     background-color: #1c1f26;
     border-radius: 0.5vh;
     border-left: 0.3vh solid #39cf39;
+    position: relative;
+  }
+  
+  .comment-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.8vh;
+  }
+  
+  .comment-author-avatar {
+    width: 4vh;
+    height: 4vh;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 1vh;
+    border: 0.1vh solid #39cf39;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .comment-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
   }
   
   .comment-timestamp {
@@ -339,8 +392,7 @@
     font-style: italic;
     margin: 1vh 0;
   }
-  
-  .delete-comment-button {
+    .delete-comment-button {
     background-color: #ff4d4d;
     color: #ffffff;
     border: none;
@@ -349,7 +401,9 @@
     font-size: 1.4vh;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin-top: 0.5vh;
+    position: absolute;
+    top: 1vh;
+    right: 1vh;
   }
   
   .delete-comment-button:hover {
@@ -389,7 +443,7 @@
     border: none;
     border-radius: 0.5vh;
     padding: 0.8vh 1.5vh;
-    font-size: 1.6vh;
+    font-size: 1.8vh;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;

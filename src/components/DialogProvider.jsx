@@ -1,10 +1,16 @@
 import { createContext, useState, useContext } from 'react';
 import Dialog from './Dialog';
+import AuthPopup from './AuthPopup';
 
 const DialogContext = createContext();
 
 export const DialogProvider = ({ children }) => {
   const [dialogs, setDialogs] = useState([]);
+  const [authDialog, setAuthDialog] = useState({
+    isOpen: false,
+    initialTab: 'login',
+    onAuthSuccess: null
+  });
 
   const showDialog = ({ title, message, confirmText, cancelText, type, showCancel, onConfirm }) => {
     const id = Math.random().toString(36).substring(2, 9);
@@ -53,14 +59,28 @@ export const DialogProvider = ({ children }) => {
     });
   };
 
+  const openDialog = (dialogType, options = {}) => {
+    if (dialogType === 'auth') {
+      setAuthDialog({ 
+        isOpen: true, 
+        initialTab: options.initialTab || 'login',
+        onAuthSuccess: options.onAuthSuccess || (() => {})
+      });
+    }
+  };
+
   const closeDialog = (id) => {
     setDialogs((prev) => prev.filter((dialog) => dialog.id !== id));
+  };
+
+  const closeAuthDialog = () => {
+    setAuthDialog(prev => ({ ...prev, isOpen: false }));
   };
 
   const currentDialog = dialogs.length > 0 ? dialogs[0] : null;
 
   return (
-    <DialogContext.Provider value={{ alert, confirm, showDialog, closeDialog }}>
+    <DialogContext.Provider value={{ alert, confirm, showDialog, closeDialog, openDialog }}>
       {children}
       {currentDialog && (
         <Dialog
@@ -80,6 +100,11 @@ export const DialogProvider = ({ children }) => {
           }}
         />
       )}
+      <AuthPopup
+        isOpen={authDialog.isOpen}
+        onClose={closeAuthDialog}
+        onAuthSuccess={authDialog.onAuthSuccess}
+      />
     </DialogContext.Provider>
   );
 };

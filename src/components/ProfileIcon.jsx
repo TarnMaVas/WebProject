@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import '../styles/ProfileIcon.css';
+import { useState, useEffect } from 'react';
 import AuthPopup from './AuthPopup';
 import AvatarPopup from './AvatarPopup';
 import { subscribeToAuthChanges } from '../firebase/auth';
-import { uploadUserAvatar } from '../firebase/storage';
+import { uploadAvatar, getDefaultAvatar } from '../cloudinary/avatar';
 import { auth } from '../firebase/config';
 import { useToast } from './ToastProvider';
 import { useDialog } from './DialogProvider';
 import { useFirebaseWithNotifications } from '../hooks/useFirebaseWithNotifications';
 import { useNavigate } from 'react-router-dom';
+import '../styles/ProfileIcon.css';
 
 const ProfileIcon = () => {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [user, setUser] = useState(null);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [isChangingAvatar, setIsChangingAvatar] = useState(false);
   const toast = useToast();
   const dialog = useDialog();
@@ -28,9 +27,7 @@ const ProfileIcon = () => {
   }, []);
 
   const toggleAuthPopup = () => {
-    if (user) {
-      setShowDropdown(!showDropdown);
-    } else {
+    if (!user) {
       setIsAuthOpen(!isAuthOpen);
     }
   };
@@ -44,15 +41,26 @@ const ProfileIcon = () => {
       {
         onConfirm: async () => {
           await logoutUser();
-          setShowDropdown(false);
         }
       }
     );
-  };
-
+  };  
   const handleAvatarUpload = async (file) => {
     try {
-      await uploadUserAvatar(file);
+      toast.showInfo('Uploading avatar...');
+      
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error('Image is too large. Please select an image under 5MB.');
+      }
+      await uploadAvatar(file, {
+        transformation: 'w_500,h_500,c_fill,g_face,a_0',
+        onProgress: (progress) => {
+          if (progress === 100) {
+            toast.showInfo('Finalizing upload...');
+          }
+        },
+        suppressToast: false
+      });
 
       await auth.currentUser.reload();
       const refreshedUser = auth.currentUser;
@@ -62,36 +70,50 @@ const ProfileIcon = () => {
       toast.showSuccess('Avatar updated successfully!');
     } catch (err) {
       console.error('Failed to update avatar:', err);
-      toast.showError('Failed to update avatar. Please try again.');
+      let errorMessage = 'Failed to update avatar';
+      
+      if (err.message) {
+        if (err.message.includes('preset')) {
+          errorMessage = 'Avatar upload failed.';
+        } else if (err.message.includes('Overwrite parameter')) {
+          errorMessage = 'Avatar upload settings are incorrect. Please contact support.';
+        } else if (err.message.includes('timeout')) {
+          errorMessage = 'Upload timed out. Please try again with a smaller image.';
+        } else {
+          errorMessage = `Upload failed: ${err.message}`;
+        }
+      }
+      
+      toast.showError(errorMessage);
     }
-  };
-  return (
+  };  return (
     <div className="profile-container">
-      <div className="profile-icon-wrapper" onClick={toggleAuthPopup}>
+      <div className={`profile-icon-wrapper ${user ? 'logged-in' : ''}`} onClick={toggleAuthPopup}>
         {user?.photoURL ? (
           <img
-            src={`${user.photoURL}?t=${Date.now()}`} // 👈 force browser to bypass cache
+            src={user.photoURL}
             alt="User Avatar"
             className="avatar-img"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = getDefaultAvatar(user.displayName);
+            }}
           />
         ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="profile-icon">
-            <path d="M16 31C7.729 31 1 24.271 1 16S7.729 1 16 1s15 6.729 15 15-6.729 15-15 15zm0-28C8.832 3 3 8.832 3 16s5.832 13 13 13 13-5.832 13-13S23.168 3 16 3z" fill="#15cd2e" />
-            <circle cx="16" cy="15.133" r="4.267" fill="#15cd2e" />
-            <path d="M16 30c2.401 0 4.66-.606 6.635-1.671-.425-3.229-3.18-5.82-6.635-5.82s-6.21 2.591-6.635 5.82A13.935 13.935 0 0 0 16 30z" fill="#15cd2e" />
-          </svg>
+          <div className="profile-icon-fallback">
+            {user?.displayName ? user.displayName.charAt(0).toUpperCase() : '?'}
+          </div>
         )}
       </div>
-
-      {showDropdown && (
+      {user && (
         <div className="profile-dropdown">
           <div className="dropdown-header">
             <p className="username">{user?.displayName || 'User'}</p>
             <p className="email">{user?.email}</p>
-          </div>          <div className="dropdown-options">
+          </div>
+          <div className="dropdown-options">
             <button className="dropdown-option" onClick={() => navigate('/profile')}>My Profile</button>
             <button className="dropdown-option" onClick={() => navigate('/snippets')}>My Snippets</button>
-            <button className="dropdown-option" onClick={() => setIsChangingAvatar(true)}>Change Avatar</button>
             <button className="dropdown-option" onClick={handleLogout}>Logout</button>
           </div>
         </div>

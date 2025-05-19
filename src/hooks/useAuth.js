@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useFirebaseWithNotifications } from './useFirebaseWithNotifications';
-import { auth } from '../firebase/config';
 
 export const useAuth = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -51,6 +50,7 @@ export const useAuth = () => {
   };
 
   return {
+    user: currentUser,
     currentUser,
     isLoading,
     handleLogin,

@@ -1,4 +1,3 @@
-// Enhanced Firebase services with toast notifications
 import { 
   addToFavorites as addToFavoritesBase, 
   removeFromFavorites as removeFromFavoritesBase,
@@ -7,10 +6,12 @@ import {
   deleteComment as deleteCommentBase,
   filterSnippets as filterSnippetsBase,
   getPopularSnippets as getPopularSnippetsBase,
-  getFavoriteSnippets as getFavoriteSnippetsBase
+  getFavoriteSnippets as getFavoriteSnippetsBase,
+  createSnippet as createSnippetBase,
+  getUserSnippets as getUserSnippetsBase
 } from './services';
 
-export const createEnhancedServices = (toast, dialog) => {
+export const createEnhancedServices = (toast) => {
 
   const addToFavorites = async (snippetId) => {
     try {
@@ -31,6 +32,43 @@ export const createEnhancedServices = (toast, dialog) => {
       return true;
     } catch (error) {
       toast.showError(error.message || 'Failed to remove from favorites');
+      throw error;
+    }
+  };
+
+  const addComment = async (snippetId, commentData) => {
+    try {
+      const result = await addCommentBase(snippetId, commentData);
+      toast.showSuccess('Comment added successfully');
+      return result;
+    } catch (error) {
+      toast.showError(error.message || 'Failed to add comment');
+      throw error;
+    }
+  };
+
+  const updateSnippetReaction = async (snippetId, isLike) => {
+    try {
+      const result = await updateSnippetReactionBase(snippetId, isLike);
+      if (isLike) {
+        toast.showSuccess('You liked this snippet');
+      } else {
+        toast.showInfo('You disliked this snippet');
+      }
+      return result;
+    } catch (error) {
+      toast.showError(error.message || 'Failed to update reaction');
+      throw error;
+    }
+  };
+
+  const deleteComment = async (snippetId, commentId) => {
+    try {
+      await deleteCommentBase(snippetId, commentId);
+      toast.showInfo('Comment removed');
+      return true;
+    } catch (error) {
+      toast.showError(error.message || 'Failed to delete comment');
       throw error;
     }
   };
@@ -64,6 +102,25 @@ export const createEnhancedServices = (toast, dialog) => {
       toast.showError('Failed to load favorite snippets. Please try again.');
       return [];
     }
+  };  const uploadSnippet = async (snippetData) => {
+    try {
+      const result = await createSnippetBase(snippetData);
+      toast.showSuccess('Snippet created successfully!');
+      return result;
+    } catch (error) {
+      toast.showError(error.message || 'Failed to create snippet');
+      throw error;
+    }
+  };
+  
+  const getUserSnippets = async () => {
+    try {
+      const snippets = await getUserSnippetsBase();
+      return snippets;
+    } catch (error) {
+      toast.showError('Failed to load your snippets. Please try again.');
+      return [];
+    }
   };
 
   return {
@@ -71,6 +128,11 @@ export const createEnhancedServices = (toast, dialog) => {
     removeFromFavorites,
     filterSnippets,
     getPopularSnippets,
-    getFavoriteSnippets
+    getFavoriteSnippets,
+    addComment,
+    updateSnippetReaction,
+    deleteComment,
+    uploadSnippet,
+    getUserSnippets
   };
 };

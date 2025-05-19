@@ -19,28 +19,112 @@
   width: 90%;
   color: white;
   text-align: center;
+  box-shadow: 0 0.5vh 2vh rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .avatar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 2.5vh;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1.5vh;
 }
 
-.avatar-body input {
-  margin-top: 2vh;
+.avatar-header h2 {
+  color: #15cd2e;
+  margin: 0;
+  font-size: 2.2vh;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  font-size: 3vh;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
+
+.avatar-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5vh;
+}
+
+.avatar-upload-label {
+  display: inline-block;
+  margin-bottom: 2vh;
+  cursor: pointer;
+}
+
+.upload-button {
+  display: inline-block;
+  padding: 1vh 2vh;
+  background-color: rgba(21, 205, 46, 0.2);
+  color: #15cd2e;
+  border: 1px solid #15cd2e;
+  border-radius: 0.5vh;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.upload-button:hover {
+  background-color: rgba(21, 205, 46, 0.3);
+}
+
+.file-input {
+  display: none;
+}
+
+.avatar-error {
+  color: #ff6b6b;
+  margin: 1vh 0 2vh;
+  font-size: 1.5vh;
+}
+
+.avatar-preview {
+  margin: 1.5vh 0;
+  width: 140px;
+  height: 140px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .avatar-preview img {
-  margin-top: 2vh;
-  max-width: 100px;
-  max-height: 100px;
+  margin-top: 1vh;
+  width: 12vh;
+  height: 12vh;
   border-radius: 50%;
+  object-fit: contain;
+  object-position: center center;
+  border: 3px solid #15cd2e;
+  box-shadow: 0 0 1.5vh rgba(21, 205, 46, 0.4);
+}
+
+.avatar-preview-label {
+  font-size: 1.4vh;
+  color: #15cd2e;
+  margin-top: 0.8vh;
+  display: block;
+  text-align: center;
 }
 
 .avatar-footer {
   margin-top: 2vh;
   display: flex;
-  gap: 1rem;
+  gap: 1.5vh;
   justify-content: center;
+  padding-top: 2vh;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
