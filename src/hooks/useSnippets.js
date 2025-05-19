@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useFirebaseWithNotifications } from './useFirebaseWithNotifications';
-import { auth } from '../firebase/config';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useFirebaseWithNotifications } from "./useFirebaseWithNotifications";
+import { auth } from "../firebase/config";
 
 export const useSnippets = () => {
   const [snippets, setSnippets] = useState([]);
@@ -10,11 +10,11 @@ export const useSnippets = () => {
   const fetchInProgress = useRef(false);
   const fetchSnippets = useCallback(async () => {
     if (fetchInProgress.current) return;
-    
+
     try {
       fetchInProgress.current = true;
       setIsLoading(true);
-      
+
       const userSnippets = await getUserSnippets();
       setSnippets(userSnippets);
     } catch (error) {
@@ -24,7 +24,7 @@ export const useSnippets = () => {
       fetchInProgress.current = false;
     }
   }, [getUserSnippets]);
-  
+
   useEffect(() => {
     let isMounted = true;
 
@@ -37,7 +37,7 @@ export const useSnippets = () => {
 
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!isMounted) return;
-      
+
       if (user) {
         fetchSnippets();
       } else {
@@ -45,18 +45,18 @@ export const useSnippets = () => {
         setIsLoading(false);
       }
     });
-    
+
     return () => {
       isMounted = false;
       unsubscribe();
     };
   }, [fetchSnippets]);
-  
+
   const handleUploadSnippet = async (snippetData) => {
     setUploading(true);
     try {
       const newSnippet = await uploadSnippet(snippetData);
-      setSnippets(prevSnippets => [newSnippet, ...prevSnippets]);
+      setSnippets((prevSnippets) => [newSnippet, ...prevSnippets]);
       return true;
     } catch (error) {
       console.error("Error uploading snippet:", error);
@@ -65,7 +65,7 @@ export const useSnippets = () => {
       setUploading(false);
     }
   };
-  
+
   return {
     snippets,
     isLoading,

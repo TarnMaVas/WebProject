@@ -1,8 +1,12 @@
-import { useState, useEffect } from 'react';
-import { getOptions } from '../firebase/services';
+import { useState, useEffect } from "react";
+import { getOptions } from "../firebase/services";
 
 const DEFAULT_TAGS = [
-  'JavaScript', 'python', 'Java', 'StackOverflow', 'GitHub'
+  "JavaScript",
+  "python",
+  "Java",
+  "StackOverflow",
+  "GitHub",
 ];
 
 export const useTags = () => {
@@ -17,11 +21,11 @@ export const useTags = () => {
         const options = await getOptions();
 
         let allTags = [];
-        
+
         if (options && options.length > 0) {
-          options.forEach(group => {
+          options.forEach((group) => {
             if (group.options && Array.isArray(group.options)) {
-              group.options.forEach(option => {
+              group.options.forEach((option) => {
                 if (option.label) {
                   allTags.push(option.label);
                 }
@@ -33,7 +37,7 @@ export const useTags = () => {
         if (allTags.length === 0) {
           allTags = DEFAULT_TAGS;
         }
-        
+
         setAvailableTags(allTags);
       } catch (error) {
         console.error("Error fetching tags:", error);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Results from "./Results";
 import "../styles/Popular.css";
 import { subscribeToAuthChanges } from "../firebase/auth";
@@ -7,7 +7,8 @@ import ScrollToTopButton from "./ScrollToTopButton";
 import { useToast } from "./ToastProvider";
 import { useFirebaseWithNotifications } from "../hooks/useFirebaseWithNotifications";
 
-const Popular = () => {  const [snippets, setSnippets] = useState([]);
+const Popular = () => {
+  const [snippets, setSnippets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
@@ -15,29 +16,32 @@ const Popular = () => {  const [snippets, setSnippets] = useState([]);
   const { getPopularSnippets } = useFirebaseWithNotifications();
 
   useEffect(() => {
-    const unsubscribe = subscribeToAuthChanges(user => {
+    const unsubscribe = subscribeToAuthChanges((user) => {
       setCurrentUser(user);
     });
 
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    const fetchPopularSnippets = async () => {
-      try {
-        setIsLoading(true);
-        const popularSnippets = await getPopularSnippets();
-        setSnippets(popularSnippets);      
-      } catch (err) {
-        console.error("Error fetching popular snippets:", err);
-        setError("Failed to load popular snippets. Please try again later.");
-        toast.showError("Failed to load popular snippets. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    };    fetchPopularSnippets();
+  const fetchPopularSnippets = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const popularSnippets = await getPopularSnippets();
+      setSnippets(popularSnippets);
+    } catch (err) {
+      console.error("Error fetching popular snippets:", err);
+      setError("Failed to load popular snippets. Please try again later.");
+      toast.showError("Failed to load popular snippets. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   }, [getPopularSnippets, toast]);
-  
+
+  useEffect(() => {
+    fetchPopularSnippets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const {
     submittingComment,
     submittingReaction,
@@ -46,12 +50,12 @@ const Popular = () => {  const [snippets, setSnippets] = useState([]);
     handleCommentSubmit,
     handleReaction,
     handleDeleteComment,
-    hasUserReacted
+    hasUserReacted,
   } = useSnippetInteractions(currentUser, snippets, setSnippets);
 
   return (
     <main className="page-container popular-page">
-      <h1 className="page-title popular-title">Popular Snippets</h1>      
+      <h1 className="page-title popular-title">Popular Snippets</h1>
       <p className="page-description">
         The most liked and used code snippets from our community
       </p>

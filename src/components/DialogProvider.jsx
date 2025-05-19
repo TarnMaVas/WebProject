@@ -1,6 +1,6 @@
-import { createContext, useState, useContext } from 'react';
-import Dialog from './Dialog';
-import AuthPopup from './AuthPopup';
+import { createContext, useState, useContext } from "react";
+import Dialog from "./Dialog";
+import AuthPopup from "./AuthPopup";
 
 const DialogContext = createContext();
 
@@ -8,44 +8,55 @@ export const DialogProvider = ({ children }) => {
   const [dialogs, setDialogs] = useState([]);
   const [authDialog, setAuthDialog] = useState({
     isOpen: false,
-    initialTab: 'login',
-    onAuthSuccess: null
+    initialTab: "login",
+    onAuthSuccess: null,
   });
 
-  const showDialog = ({ title, message, confirmText, cancelText, type, showCancel, onConfirm }) => {
+  const showDialog = ({
+    title,
+    message,
+    confirmText,
+    cancelText,
+    type,
+    showCancel,
+    onConfirm,
+  }) => {
     const id = Math.random().toString(36).substring(2, 9);
-    setDialogs((prev) => [...prev, { 
-      id, 
-      title, 
-      message, 
-      confirmText: confirmText || 'Confirm', 
-      cancelText: cancelText || 'Cancel', 
-      type: type || 'info', 
-      showCancel: showCancel !== false,
-      onConfirm: onConfirm || (() => {})
-    }]);
+    setDialogs((prev) => [
+      ...prev,
+      {
+        id,
+        title,
+        message,
+        confirmText: confirmText || "Confirm",
+        cancelText: cancelText || "Cancel",
+        type: type || "info",
+        showCancel: showCancel !== false,
+        onConfirm: onConfirm || (() => {}),
+      },
+    ]);
     return id;
   };
 
-  const alert = (message, title = 'Alert', options = {}) => {
+  const alert = (message, title = "Alert", options = {}) => {
     return showDialog({
       title,
       message,
-      confirmText: options.confirmText || 'OK',
+      confirmText: options.confirmText || "OK",
       showCancel: false,
-      type: options.type || 'info',
-      onConfirm: options.onConfirm || (() => {})
+      type: options.type || "info",
+      onConfirm: options.onConfirm || (() => {}),
     });
   };
 
-  const confirm = (message, title = 'Confirm', options = {}) => {
+  const confirm = (message, title = "Confirm", options = {}) => {
     return new Promise((resolve) => {
       showDialog({
         title,
         message,
-        confirmText: options.confirmText || 'Confirm',
-        cancelText: options.cancelText || 'Cancel',
-        type: options.type || 'warning',
+        confirmText: options.confirmText || "Confirm",
+        cancelText: options.cancelText || "Cancel",
+        type: options.type || "warning",
         showCancel: true,
         onConfirm: () => {
           resolve(true);
@@ -54,17 +65,17 @@ export const DialogProvider = ({ children }) => {
         onCancel: () => {
           resolve(false);
           if (options.onCancel) options.onCancel();
-        }
+        },
       });
     });
   };
 
   const openDialog = (dialogType, options = {}) => {
-    if (dialogType === 'auth') {
-      setAuthDialog({ 
-        isOpen: true, 
-        initialTab: options.initialTab || 'login',
-        onAuthSuccess: options.onAuthSuccess || (() => {})
+    if (dialogType === "auth") {
+      setAuthDialog({
+        isOpen: true,
+        initialTab: options.initialTab || "login",
+        onAuthSuccess: options.onAuthSuccess || (() => {}),
       });
     }
   };
@@ -74,13 +85,15 @@ export const DialogProvider = ({ children }) => {
   };
 
   const closeAuthDialog = () => {
-    setAuthDialog(prev => ({ ...prev, isOpen: false }));
+    setAuthDialog((prev) => ({ ...prev, isOpen: false }));
   };
 
   const currentDialog = dialogs.length > 0 ? dialogs[0] : null;
 
   return (
-    <DialogContext.Provider value={{ alert, confirm, showDialog, closeDialog, openDialog }}>
+    <DialogContext.Provider
+      value={{ alert, confirm, showDialog, closeDialog, openDialog }}
+    >
       {children}
       {currentDialog && (
         <Dialog
@@ -112,7 +125,7 @@ export const DialogProvider = ({ children }) => {
 export const useDialog = () => {
   const context = useContext(DialogContext);
   if (context === undefined) {
-    throw new Error('useDialog must be used within a DialogProvider');
+    throw new Error("useDialog must be used within a DialogProvider");
   }
   return context;
 };

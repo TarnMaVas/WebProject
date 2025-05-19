@@ -5,12 +5,13 @@ import dislikeIcon from "../icons/thumb_down.svg";
 import { useDialog } from "./DialogProvider";
 import { useToast } from "./ToastProvider";
 import { useFavorites } from "../hooks/useFavorites";
-import { getDefaultAvatar } from '../cloudinary/avatar';
+import { getDefaultAvatar } from "../cloudinary/avatar";
+import CommentAvatar from "./CommentAvatar";
 
-const Results = ({ 
-  results, 
-  searchPerformed, 
-  isLoading, 
+const Results = ({
+  results,
+  searchPerformed,
+  isLoading,
   currentUser,
   submittingComment,
   submittingReaction,
@@ -19,13 +20,18 @@ const Results = ({
   onCommentSubmit,
   onReaction,
   onDeleteComment,
-  hasUserReacted
+  hasUserReacted,
 }) => {
   const [expandedSnippets, setExpandedSnippets] = useState({});
-  const { favoriteStatus, submittingFavorite, toggleFavorite, checkMultipleFavoriteStatus } = useFavorites(currentUser);
+  const {
+    favoriteStatus,
+    submittingFavorite,
+    toggleFavorite,
+    checkMultipleFavoriteStatus,
+  } = useFavorites(currentUser);
   const dialog = useDialog();
   const toast = useToast();
-  
+
   useEffect(() => {
     if (results.length > 0 && currentUser) {
       checkMultipleFavoriteStatus(results);
@@ -33,18 +39,19 @@ const Results = ({
   }, [results, currentUser, checkMultipleFavoriteStatus]);
 
   const toggleCommentSection = (snippetId) => {
-    setExpandedSnippets(prevState => ({
+    setExpandedSnippets((prevState) => ({
       ...prevState,
-      [snippetId]: !prevState[snippetId]
+      [snippetId]: !prevState[snippetId],
     }));
   };
 
   const copyToClipboard = (code) => {
-    navigator.clipboard.writeText(code)
+    navigator.clipboard
+      .writeText(code)
       .then(() => {
         toast.showSuccess("Code copied to clipboard!");
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Failed to copy: ", err);
         toast.showError("Failed to copy code. Please try again.");
       });
@@ -69,24 +76,34 @@ const Results = ({
       ) : (
         results.map((result) => (
           <div className="result-item" key={result.id}>
-          <div className="result-header-row">
+            <div className="result-header-row">
               <h3 className="result-header">{result.title}</h3>
               {currentUser && (
                 <button
-                  className={`favorite-button ${favoriteStatus[result.id] ? 'favorited' : ''}`}
+                  className={`favorite-button ${
+                    favoriteStatus[result.id] ? "favorited" : ""
+                  }`}
                   onClick={() => toggleFavorite(result.id)}
                   disabled={submittingFavorite[result.id]}
-                  title={favoriteStatus[result.id] ? "Remove from favorites" : "Add to favorites"}
+                  title={
+                    favoriteStatus[result.id]
+                      ? "Remove from favorites"
+                      : "Add to favorites"
+                  }
                 >
-                  {submittingFavorite[result.id] ? '...' : favoriteStatus[result.id] ? '★' : '☆'}
+                  {submittingFavorite[result.id]
+                    ? "..."
+                    : favoriteStatus[result.id]
+                    ? "★"
+                    : "☆"}
                 </button>
               )}
             </div>
             <div className="author-info">
               <div className="author-avatar-container">
                 {result.authorPhotoURL ? (
-                  <img 
-                    src={result.authorPhotoURL} 
+                  <img
+                    src={result.authorPhotoURL}
                     alt={`${result.author}'s avatar`}
                     className="author-avatar"
                     onError={(e) => {
@@ -95,8 +112,8 @@ const Results = ({
                     }}
                   />
                 ) : (
-                  <img 
-                    src={getDefaultAvatar(result.author)} 
+                  <img
+                    src={getDefaultAvatar(result.author)}
                     alt={`${result.author}'s avatar`}
                     className="author-avatar"
                   />
@@ -121,13 +138,17 @@ const Results = ({
             <div className="result-tags">
               <p className="results-label">Tags:</p>
               {result.tags.map((tag, index) => (
-                <span className="tag" key={index}>{tag}</span>
+                <span className="tag" key={index}>
+                  {tag}
+                </span>
               ))}
             </div>
 
             <div className="result-reactions">
               <button
-                className={`reaction-button ${hasUserReacted(result, true) ? 'active' : ''}`}
+                className={`reaction-button ${
+                  hasUserReacted(result, true) ? "active" : ""
+                }`}
                 onClick={() => onReaction(result.id, true)}
                 disabled={submittingReaction[result.id + "_like"]}
               >
@@ -136,11 +157,17 @@ const Results = ({
               </button>
 
               <button
-                className={`reaction-button ${hasUserReacted(result, false) ? 'active' : ''}`}
+                className={`reaction-button ${
+                  hasUserReacted(result, false) ? "active" : ""
+                }`}
                 onClick={() => onReaction(result.id, false)}
                 disabled={submittingReaction[result.id + "_dislike"]}
               >
-                <img src={dislikeIcon} alt="Dislike" className="review-icon negative" />
+                <img
+                  src={dislikeIcon}
+                  alt="Dislike"
+                  className="review-icon negative"
+                />
                 <span>{result.dislikes || 0}</span>
               </button>
             </div>
@@ -150,7 +177,9 @@ const Results = ({
                 className="comments-toggle"
                 onClick={() => toggleCommentSection(result.id)}
               >
-                {expandedSnippets[result.id] ? 'Hide Comments' : `Show Comments (${result.comments?.length || 0})`}
+                {expandedSnippets[result.id]
+                  ? "Hide Comments"
+                  : `Show Comments (${result.comments?.length || 0})`}
               </button>
 
               {expandedSnippets[result.id] && (
@@ -160,87 +189,95 @@ const Results = ({
                     {result.comments && result.comments.length > 0 ? (
                       result.comments.map((comment, index) => (
                         <div className="comment" key={index}>
+                          {" "}
                           <div className="comment-header">
                             <div className="comment-author-avatar">
-                              {comment.authorPhotoURL ? (
-                                <img 
-                                  src={comment.authorPhotoURL} 
-                                  alt={`${typeof comment.author === 'object' ? comment.author.name : comment.author}'s avatar`}
-                                  className="comment-avatar-img"
-                                  onError={(e) => {
-                                    e.target.onerror = null; // Prevent infinite loop
-                                    e.target.src = getDefaultAvatar(typeof comment.author === 'object' ? comment.author.name : comment.author);
-                                  }}
-                                />
-                              ) : (
-                                <img 
-                                  src={getDefaultAvatar(typeof comment.author === 'object' ? comment.author.name : comment.author)} 
-                                  alt={`${typeof comment.author === 'object' ? comment.author.name : comment.author}'s avatar`}
-                                  className="comment-avatar-img"
-                                />
-                              )}
+                              <CommentAvatar comment={comment} />
                             </div>
-                            <p className="comment-author">{typeof comment.author === 'object' ? comment.author.name : comment.author}:</p>
+                            <p className="comment-author">
+                              {typeof comment.author === "object"
+                                ? comment.author.name
+                                : comment.author}
+                              :
+                            </p>
                           </div>
                           <p className="comment-text">{comment.text}</p>
                           <p className="comment-timestamp">
-                            {comment.timestamp ? 
-                              (comment.timestamp.seconds ? 
-                                new Date(comment.timestamp.seconds * 1000).toLocaleString() : 
-                                new Date(comment.timestamp).toLocaleString()
-                              ) : ''}
-                          </p>{currentUser && (
-                            (comment.author?.id === currentUser?.uid || 
-                             comment.authorId === currentUser?.uid ||
-                             (!comment.author?.id && !comment.authorId && 
-                              typeof comment.author === 'string' && 
+                            {comment.timestamp
+                              ? comment.timestamp.seconds
+                                ? new Date(
+                                    comment.timestamp.seconds * 1000
+                                  ).toLocaleString()
+                                : new Date(comment.timestamp).toLocaleString()
+                              : ""}
+                          </p>
+                          {currentUser &&
+                            (comment.author?.id === currentUser?.uid ||
+                            comment.authorId === currentUser?.uid ||
+                            (!comment.author?.id &&
+                              !comment.authorId &&
+                              typeof comment.author === "string" &&
                               comment.author === currentUser?.displayName) ||
-                             currentUser?.email?.includes("admin")) ? (
+                            currentUser?.email?.includes("admin") ? (
                               <button
                                 className="delete-comment-button"
                                 onClick={() => {
                                   dialog.confirm(
-                                    'Are you sure you want to delete this comment?',
-                                    'Delete Comment',
+                                    "Are you sure you want to delete this comment?",
+                                    "Delete Comment",
                                     {
-                                      type: 'error',
-                                      confirmText: 'Delete',
+                                      type: "error",
+                                      confirmText: "Delete",
                                       onConfirm: () => {
                                         onDeleteComment(result.id, comment.id);
-                                      }
+                                      },
                                     }
                                   );
                                 }}
                               >
                                 Delete
                               </button>
-                            ) : null
-                          )}
+                            ) : null)}
                         </div>
                       ))
                     ) : (
-                      <p className="no-comments">No comments yet. Be the first to comment!</p>
+                      <p className="no-comments">
+                        No comments yet. Be the first to comment!
+                      </p>
                     )}
                   </div>
 
                   <div className="add-comment-section">
                     <textarea
                       placeholder="Add a comment..."
-                      value={newComments[result.id] || ''}
-                      onChange={(e) => onCommentChange(result.id, e.target.value)}
+                      value={newComments[result.id] || ""}
+                      onChange={(e) =>
+                        onCommentChange(result.id, e.target.value)
+                      }
                       disabled={!currentUser}
+                      name="comment-input"
                     />
                     <button
                       className="submit-comment-button"
                       onClick={() => onCommentSubmit(result.id)}
-                      disabled={submittingComment[result.id] || !newComments[result.id]?.trim() || !currentUser}
+                      disabled={
+                        submittingComment[result.id] ||
+                        !newComments[result.id]?.trim() ||
+                        !currentUser
+                      }
                     >
-                      {submittingComment[result.id] ? 'Posting...' : 'Post Comment'}
+                      {submittingComment[result.id]
+                        ? "Posting..."
+                        : "Post Comment"}
                     </button>
-                    {!currentUser && <p className="login-prompt">Please log in to add comments</p>}
+                    {!currentUser && (
+                      <p className="login-prompt">
+                        Please log in to add comments
+                      </p>
+                    )}
                   </div>
                 </>
-              )}            
+              )}
             </div>
           </div>
         ))

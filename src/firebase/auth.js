@@ -1,16 +1,20 @@
-import { 
+import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
   sendPasswordResetEmail,
-  onAuthStateChanged
-} from 'firebase/auth';
-import { auth } from './config';
+  onAuthStateChanged,
+} from "firebase/auth";
+import { auth } from "./config";
 
 export const registerUser = async (email, password, username) => {
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
     await updateProfile(userCredential.user, { displayName: username });
     return { user: userCredential.user, error: null };
   } catch (error) {
@@ -20,7 +24,11 @@ export const registerUser = async (email, password, username) => {
 
 export const loginUser = async (email, password) => {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
     return { user: userCredential.user, error: null };
   } catch (error) {
     return { user: null, error: error.message };

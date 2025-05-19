@@ -46,11 +46,11 @@
 }
 
 @keyframes fadeIn {
-  from { 
+  from {
     opacity: 0;
     transform: translateY(3vh);
   }
-  to { 
+  to {
     opacity: 1;
     transform: translateY(0);
   }
@@ -323,7 +323,7 @@
 }
 
 .joined-date:before {
-  content: '•';
+  content: "•";
   display: block;
   color: #15cd2e;
   font-size: 2vh;
@@ -340,11 +340,11 @@
   .profile-sections {
     flex-direction: column;
   }
-  
+
   .profile-section {
     min-width: 100%;
   }
-  
+
   .single-column-profile {
     max-width: 90vw;
   }
@@ -355,17 +355,17 @@
     flex-direction: column;
     gap: 1.5vh;
   }
-  
+
   .stat-item {
     padding: 1vh 0;
     border-bottom: 0.1vh solid rgba(255, 255, 255, 0.1);
     width: 80%;
   }
-  
+
   .stat-item:last-child {
     border-bottom: none;
   }
-  
+
   .avatar-container {
     width: 15vh;
     height: 15vh;

@@ -1,6 +1,6 @@
 import { uploadPreset, cloudinaryConfig } from "./config";
 import { updateProfile } from "firebase/auth";
-import { doc, updateDoc, getDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { getCurrentUser } from "../firebase/auth";
 
@@ -61,14 +61,13 @@ export const uploadAvatar = async (imageFile) => {
     try {
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
-
       if (userDoc.exists()) {
         await updateDoc(userDocRef, {
           photoURL: imageUrl,
           updatedAt: new Date(),
         });
       } else {
-        await updateDoc(userDocRef, {
+        await setDoc(userDocRef, {
           photoURL: imageUrl,
           displayName: user.displayName || "",
           email: user.email || "",
@@ -79,6 +78,7 @@ export const uploadAvatar = async (imageFile) => {
       }
     } catch (err) {
       console.error("Error updating Firestore user document:", err);
+      throw new Error(`Failed to update profile: ${err.message}`);
     }
 
     return imageUrl;

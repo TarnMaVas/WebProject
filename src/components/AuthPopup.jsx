@@ -1,20 +1,26 @@
-import { useState, useEffect } from 'react';
-import '../styles/AuthPopup.css';
-import { useFirebaseWithNotifications } from '../hooks/useFirebaseWithNotifications';
+import { useState, useEffect } from "react";
+import "../styles/AuthPopup.css";
+import { useFirebaseWithNotifications } from "../hooks/useFirebaseWithNotifications";
 
-const AuthPopup = ({ isOpen, onClose, onAuthSuccess, initialTab = 'login' }) => {
-  const [isLogin, setIsLogin] = useState(initialTab === 'login');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
+const AuthPopup = ({
+  isOpen,
+  onClose,
+  onAuthSuccess,
+  initialTab = "login",
+}) => {
+  const [isLogin, setIsLogin] = useState(initialTab === "login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [resetSent, setResetSent] = useState(false);
-  const { registerUser, loginUser, resetPassword } = useFirebaseWithNotifications();
+  const { registerUser, loginUser, resetPassword } =
+    useFirebaseWithNotifications();
 
   useEffect(() => {
-    setIsLogin(initialTab === 'login');
+    setIsLogin(initialTab === "login");
   }, [initialTab]);
 
   if (!isOpen) return null;
@@ -47,10 +53,15 @@ const AuthPopup = ({ isOpen, onClose, onAuthSuccess, initialTab = 'login' }) => 
           onClose();
         } else {
           setError(error);
+          if (error && error.toLowerCase().includes("email")) {
+            document.getElementById("email").focus();
+          } else if (error && error.toLowerCase().includes("password")) {
+            document.getElementById("password").focus();
+          }
         }
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again later.');
+      setError("An unexpected error occurred. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -61,9 +72,9 @@ const AuthPopup = ({ isOpen, onClose, onAuthSuccess, initialTab = 'login' }) => 
     setError(null);
     setShowResetPassword(false);
     setResetSent(false);
-    setEmail('');
-    setPassword('');
-    setUsername('');
+    setEmail("");
+    setPassword("");
+    setUsername("");
   };
 
   const toggleResetPassword = () => {
@@ -77,15 +88,31 @@ const AuthPopup = ({ isOpen, onClose, onAuthSuccess, initialTab = 'login' }) => 
       <div className="auth-popup">
         <div className="auth-header">
           <h2>
-            {showResetPassword ? 'Reset Password' : isLogin ? 'Log In' : 'Sign Up'}
+            {showResetPassword
+              ? "Reset Password"
+              : isLogin
+              ? "Log In"
+              : "Sign Up"}
           </h2>
-          <button className="close-btn" onClick={onClose}>&times;</button>
+          <button className="close-btn" onClick={onClose}>
+            &times;
+          </button>
         </div>
-        
+
         {resetSent ? (
           <div className="reset-confirmation">
             <p>Password reset email has been sent. Please check your inbox.</p>
-            <button className="auth-btn" onClick={() => setShowResetPassword(false)}>Back to Login</button>
+            <button
+              className="auth-btn"
+              onClick={() => {
+                setShowResetPassword(false);
+                setResetSent(false);
+                setIsLogin(true);
+                setError(null);
+              }}
+            >
+              Back to Login
+            </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -95,32 +122,43 @@ const AuthPopup = ({ isOpen, onClose, onAuthSuccess, initialTab = 'login' }) => 
                 <input
                   type="text"
                   id="username"
+                  name="username"
+                  autoComplete="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   disabled={loading}
+                  minLength="3"
+                  maxLength="30"
                   required
                 />
+                <small className="input-help">
+                  Username must be between 3 and 30 characters
+                </small>
               </div>
             )}
-            
+
             <div className="form-group">
               <label htmlFor="email">Email</label>
               <input
                 type="email"
                 id="email"
+                name="email"
+                autoComplete={isLogin ? "username" : "email"}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 required
               />
             </div>
-            
+
             {!showResetPassword && (
               <div className="form-group">
                 <label htmlFor="password">Password</label>
                 <input
                   type="password"
                   id="password"
+                  name="password"
+                  autoComplete={isLogin ? "current-password" : "new-password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading}
@@ -128,20 +166,26 @@ const AuthPopup = ({ isOpen, onClose, onAuthSuccess, initialTab = 'login' }) => 
                 />
               </div>
             )}
-            
+
             {error && <div className="auth-error">{error}</div>}
-            
+
             <div className="auth-actions">
               <button className="auth-btn" type="submit" disabled={loading}>
-                {loading ? 'Processing...' : showResetPassword ? 'Send Reset Link' : isLogin ? 'Log In' : 'Sign Up'}
+                {loading
+                  ? "Processing..."
+                  : showResetPassword
+                  ? "Send Reset Link"
+                  : isLogin
+                  ? "Log In"
+                  : "Sign Up"}
               </button>
             </div>
 
             {isLogin && !showResetPassword && (
               <div className="forgot-password">
-                <button 
-                  type="button" 
-                  className="toggle-btn" 
+                <button
+                  type="button"
+                  className="toggle-btn"
                   onClick={toggleResetPassword}
                 >
                   Forgot Password?
@@ -150,17 +194,17 @@ const AuthPopup = ({ isOpen, onClose, onAuthSuccess, initialTab = 'login' }) => 
             )}
           </form>
         )}
-        
+
         <div className="auth-footer">
           {!showResetPassword && (
             <p>
               {isLogin ? "Don't have an account?" : "Already have an account?"}
               <button className="toggle-btn" onClick={toggleMode}>
-                {isLogin ? 'Sign Up' : 'Log In'}
+                {isLogin ? "Sign Up" : "Log In"}
               </button>
             </p>
           )}
-          
+
           {showResetPassword && (
             <p>
               <button className="toggle-btn" onClick={toggleResetPassword}>

@@ -16,6 +16,20 @@ const Favorites = () => {
   const toast = useToast();
 
   useEffect(() => {
+    const fetchFavorites = async (userId) => {
+      try {
+        setIsLoading(true);
+        const favoriteSnippets = await getFavoriteSnippets(userId);
+        setSnippets(Array.isArray(favoriteSnippets) ? favoriteSnippets : []);
+      } catch (err) {
+        console.error("Error fetching favorite snippets:", err);
+        setError("Failed to load favorite snippets. Please try again later.");
+        toast.showError("Failed to load favorite snippets. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsAuthenticated(!!user);
 
@@ -27,20 +41,10 @@ const Favorites = () => {
     });
 
     return () => unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const fetchFavorites = async (userId) => {
-    try {
-      setIsLoading(true);
-      const favoriteSnippets = await getFavoriteSnippets(userId);
-      setSnippets(Array.isArray(favoriteSnippets) ? favoriteSnippets : []);
-    } catch (err) {
-      console.error("Error fetching favorite snippets:", err);
-      setError("Failed to load favorite snippets. Please try again later.");
-      toast.showError("Failed to load favorite snippets. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };  const {
+
+  const {
     submittingComment,
     submittingReaction,
     newComments,
@@ -48,8 +52,12 @@ const Favorites = () => {
     handleCommentSubmit,
     handleReaction,
     handleDeleteComment,
-    hasUserReacted
-  } = useSnippetInteractions(isAuthenticated ? auth.currentUser : null, snippets, setSnippets);
+    hasUserReacted,
+  } = useSnippetInteractions(
+    isAuthenticated ? auth.currentUser : null,
+    snippets,
+    setSnippets
+  );
 
   return (
     <main className="page-container favorites-page">
@@ -57,13 +65,14 @@ const Favorites = () => {
       <p className="page-description">
         Code snippets you've marked as favorites
       </p>
-
       {!isAuthenticated && (
         <div className="auth-message">
           <p>Please sign in to see your favorite snippets</p>
         </div>
-      )}      {isAuthenticated && error && <div className="error-message">{error}</div>}      {isAuthenticated && (
-        <Results 
+      )}{" "}
+      {isAuthenticated && error && <div className="error-message">{error}</div>}{" "}
+      {isAuthenticated && (
+        <Results
           results={snippets || []}
           searchPerformed={true}
           isLoading={isLoading}
@@ -78,15 +87,7 @@ const Favorites = () => {
           hasUserReacted={hasUserReacted}
         />
       )}
-      {isAuthenticated && !isLoading && !error && snippets.length === 0 && (
-        <div className="welcome-message">
-          <h2>No Favorites Yet</h2>
-          <p>
-            You haven't added any snippets to your favorites yet. Browse
-            snippets and click the heart icon to add them here.
-          </p>
-        </div>
-      )}      <ScrollToTopButton />
+      <ScrollToTopButton />
     </main>
   );
 };

@@ -1,30 +1,33 @@
-import { useState, useEffect } from 'react';
-import '../styles/Profile.css';
-import { auth } from '../firebase/config';
-import { useUserProfile } from '../hooks/useUserProfile';
-import { useToast } from '../components/ToastProvider';
-import ScrollToTopButton from './ScrollToTopButton';
-import {getDefaultAvatar } from '../cloudinary/avatar';
+import { useState, useEffect } from "react";
+import "../styles/Profile.css";
+import { auth } from "../firebase/config";
+import { useUserProfile } from "../hooks/useUserProfile";
+import { useToast } from "../components/ToastProvider";
+import ScrollToTopButton from "./ScrollToTopButton";
+import { getDefaultAvatar } from "../cloudinary/avatar";
 
 const Profile = () => {
-  const [user, setUser] = useState(auth.currentUser);  const [isEditing, setIsEditing] = useState({
+  const [user, setUser] = useState(auth.currentUser);
+  const [isEditing, setIsEditing] = useState({
     displayName: false,
     email: false,
-    password: false
-  });  const [formData, setFormData] = useState({
-    displayName: '',
-    email: '',
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });const [avatarFile, setAvatarFile] = useState(null);
+    password: false,
+  });
+  const [formData, setFormData] = useState({
+    displayName: "",
+    email: "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
-  const { 
-    isLoading, 
-    updateUserDisplayName, 
-    updateUserEmail, 
-    updateUserPassword, 
-    stats, 
+  const {
+    isLoading,
+    updateUserDisplayName,
+    updateUserEmail,
+    updateUserPassword,
+    stats,
     uploadAvatar,
   } = useUserProfile();
   const toast = useToast();
@@ -32,10 +35,10 @@ const Profile = () => {
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          displayName: currentUser.displayName || '',
-          email: currentUser.email || ''
+          displayName: currentUser.displayName || "",
+          email: currentUser.email || "",
         }));
       }
     });
@@ -43,137 +46,143 @@ const Profile = () => {
     return () => unsubscribe();
   }, []);
 
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     if (file.size > 2 * 1024 * 1024) {
-      toast.showError('Image too large. Please select an image smaller than 2MB.');
+      toast.showError(
+        "Image too large. Please select an image smaller than 2MB."
+      );
       return;
     }
-    
+
     setAvatarFile(file);
-    
+
     const reader = new FileReader();
     reader.onload = (e) => {
       setAvatarPreview(e.target.result);
     };
     reader.readAsDataURL(file);
-    
-    e.target.value = '';
+
+    e.target.value = "";
   };
   const handleAvatarUpload = async () => {
     if (!avatarFile) return;
-    
+
     try {
-      toast.showInfo('Uploading profile picture...');
-      
+      toast.showInfo("Uploading profile picture...");
+
       await uploadAvatar(avatarFile, {
-        transformation: 'w_500,h_500,c_fill,g_face',
+        transformation: "w_500,h_500,c_fill,g_face",
         onProgress: (progress) => {
           if (progress === 100) {
-            toast.showInfo('Finalizing upload...');
+            toast.showInfo("Finalizing upload...");
           }
         },
-        suppressToast: true
+        suppressToast: true,
       });
-      
+
       await auth.currentUser.reload();
       setUser(auth.currentUser);
-      
+
       setAvatarFile(null);
       setAvatarPreview(null);
 
-      toast.showSuccess('Profile picture updated successfully!');
+      toast.showSuccess("Profile picture updated successfully!");
     } catch (err) {
-      console.error('Failed to update avatar:', err);
+      console.error("Failed to update avatar:", err);
       toast.showError(`Failed to update profile picture: ${err.message}`);
     }
   };
 
   const handleEditToggle = (field) => {
-    setIsEditing(prev => ({ ...prev, [field]: !prev[field] }));
+    setIsEditing((prev) => ({ ...prev, [field]: !prev[field] }));
 
     if (isEditing[field]) {
-      setFormData(prev => ({ 
-        ...prev, 
-        [field]: user[field] || '',
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
+      setFormData((prev) => ({
+        ...prev,
+        [field]: user[field] || "",
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
       }));
     }
   };
 
   const handleUpdateDisplayName = async () => {
     if (!formData.displayName.trim()) {
-      toast.showWarning('Username cannot be empty');
+      toast.showWarning("Username cannot be empty");
       return;
     }
-    
+
     const result = await updateUserDisplayName(formData.displayName);
     if (result.success) {
       setUser(auth.currentUser);
-      setIsEditing(prev => ({ ...prev, displayName: false }));
+      setIsEditing((prev) => ({ ...prev, displayName: false }));
     }
   };
 
   const handleUpdateEmail = async () => {
     if (!formData.email.trim()) {
-      toast.showWarning('Email cannot be empty');
+      toast.showWarning("Email cannot be empty");
       return;
     }
-    
+
     if (!formData.currentPassword) {
-      toast.showWarning('Please enter your current password');
+      toast.showWarning("Please enter your current password");
       return;
     }
-    
-    const result = await updateUserEmail(formData.email, formData.currentPassword);
+
+    const result = await updateUserEmail(
+      formData.email,
+      formData.currentPassword
+    );
     if (result.success) {
       setUser(auth.currentUser);
-      setIsEditing(prev => ({ ...prev, email: false }));
-      setFormData(prev => ({ ...prev, currentPassword: '' }));
+      setIsEditing((prev) => ({ ...prev, email: false }));
+      setFormData((prev) => ({ ...prev, currentPassword: "" }));
     }
   };
   const handleUpdatePassword = async () => {
     if (!formData.currentPassword) {
-      toast.showWarning('Please enter your current password');
+      toast.showWarning("Please enter your current password");
       return;
     }
-    
+
     if (!formData.newPassword) {
-      toast.showWarning('New password cannot be empty');
+      toast.showWarning("New password cannot be empty");
       return;
     }
-    
+
     if (formData.newPassword.length < 6) {
-      toast.showWarning('Password must be at least 6 characters long');
+      toast.showWarning("Password must be at least 6 characters long");
       return;
     }
-    
+
     if (formData.newPassword !== formData.confirmPassword) {
-      toast.showWarning('Passwords do not match');
+      toast.showWarning("Passwords do not match");
       return;
     }
-    
-    const result = await updateUserPassword(formData.currentPassword, formData.newPassword);
+
+    const result = await updateUserPassword(
+      formData.currentPassword,
+      formData.newPassword
+    );
     if (result.success) {
-      setIsEditing(prev => ({ ...prev, password: false }));
-      setFormData(prev => ({ 
-        ...prev, 
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
+      setIsEditing((prev) => ({ ...prev, password: false }));
+      setFormData((prev) => ({
+        ...prev,
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
       }));
     }
   };
-  
 
   if (!user) {
     return (
@@ -185,7 +194,7 @@ const Profile = () => {
   }
   const renderStats = () => {
     if (!stats) return null;
-    
+
     return (
       <div className="profile-stats">
         <h3>Your Activity Summary</h3>
@@ -205,7 +214,8 @@ const Profile = () => {
         </div>
         {stats.joinedDate && (
           <div className="joined-date">
-            <span className="joined-label">Member since:</span> {formatDate(stats.joinedDate)}
+            <span className="joined-label">Member since:</span>{" "}
+            {formatDate(stats.joinedDate)}
           </div>
         )}
       </div>
@@ -213,11 +223,11 @@ const Profile = () => {
   };
 
   const formatDate = (date) => {
-    if (!date) return 'Unknown';
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    if (!date) return "Unknown";
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
   return (
@@ -228,11 +238,11 @@ const Profile = () => {
       <div className="single-column-profile">
         <section className="profile-section profile-info">
           <div className="avatar-section">
-          <div className="avatar-container">              
-            {user.photoURL ? (
-                <img 
+            <div className="avatar-container">
+              {user.photoURL ? (
+                <img
                   src={user.photoURL}
-                  alt="Profile" 
+                  alt="Profile"
                   className="profile-avatar"
                   onError={(e) => {
                     e.target.onerror = null;
@@ -241,86 +251,90 @@ const Profile = () => {
                 />
               ) : (
                 <div className="profile-avatar-placeholder">
-                  {user.displayName ? user.displayName[0].toUpperCase() : '?'}
+                  {user.displayName ? user.displayName[0].toUpperCase() : "?"}
                 </div>
               )}
             </div>
-              {avatarPreview && (
+            {avatarPreview && (
               <div className="avatar-preview-container">
-                <img 
-                  src={avatarPreview} 
-                  alt="Preview" 
+                <img
+                  src={avatarPreview}
+                  alt="Preview"
                   className="avatar-preview"
                 />
                 <div className="preview-label">Preview</div>
               </div>
             )}
-            
+
             <div className="avatar-actions">
               <label className="avatar-upload-button">
                 Change Profile Picture
-                <input 
+                <input
                   type="file"
                   accept="image/*"
                   onChange={handleAvatarChange}
-                  style={{ display: 'none' }}
+                  style={{ display: "none" }}
+                  name="avatar-file"
                 />
               </label>
-              
+
               {avatarFile && (
-                <button 
+                <button
                   onClick={handleAvatarUpload}
                   className="save-button"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Uploading...' : 'Save Picture'}
+                  {isLoading ? "Uploading..." : "Save Picture"}
                 </button>
               )}
             </div>
           </div>
-          
+
           {renderStats()}
 
           <h2 className="section-title">Account Information</h2>
-            <div className="profile-field">
+          <div className="profile-field">
             <div className="field-content">
               <div className="field-info">
                 <span className="field-label">Username</span>
                 {!isEditing.displayName && (
-                  <div className="field-value">{user.displayName || 'Not set'}</div>
+                  <div className="field-value">
+                    {user.displayName || "Not set"}
+                  </div>
                 )}
               </div>
-              
+
               <div className="field-action">
-                <button 
+                <button
                   className="edit-toggle-button"
-                  onClick={() => handleEditToggle('displayName')}
+                  onClick={() => handleEditToggle("displayName")}
                 >
-                  {isEditing.displayName ? 'Cancel' : 'Edit'}
+                  {isEditing.displayName ? "Cancel" : "Edit"}
                 </button>
               </div>
             </div>
-            
+
             {isEditing.displayName && (
               <div className="field-edit">
-                <input 
+                <input
                   type="text"
                   name="displayName"
                   value={formData.displayName}
                   onChange={handleInputChange}
                   className="field-input"
+                  autoComplete="display-name"
                 />
-                <button 
+                <button
                   onClick={handleUpdateDisplayName}
                   className="save-button"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Saving...' : 'Save'}
+                  {isLoading ? "Saving..." : "Save"}
                 </button>
               </div>
             )}
           </div>
-            <div className="profile-field">
+          <div className="profile-field">
             <div className="field-content">
               <div className="field-info">
                 <span className="field-label">Email Address</span>
@@ -328,45 +342,47 @@ const Profile = () => {
                   <div className="field-value">{user.email}</div>
                 )}
               </div>
-              
+
               <div className="field-action">
-                <button 
+                <button
                   className="edit-toggle-button"
-                  onClick={() => handleEditToggle('email')}
+                  onClick={() => handleEditToggle("email")}
                 >
-                  {isEditing.email ? 'Cancel' : 'Edit'}
+                  {isEditing.email ? "Cancel" : "Edit"}
                 </button>
               </div>
             </div>
-            
+
             {isEditing.email && (
               <div className="field-edit">
-                <input 
+                <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
                   className="field-input"
+                  autoComplete="email"
                 />
-                <input 
+                <input
                   type="password"
                   name="currentPassword"
                   value={formData.currentPassword}
                   onChange={handleInputChange}
                   placeholder="Current password"
                   className="field-input"
+                  autoComplete="current-password"
                 />
-                <button 
+                <button
                   onClick={handleUpdateEmail}
                   className="save-button"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Saving...' : 'Save'}
+                  {isLoading ? "Saving..." : "Save"}
                 </button>
               </div>
             )}
           </div>
-            <div className="profile-field">
+          <div className="profile-field">
             <div className="field-content">
               <div className="field-info">
                 <span className="field-label">Password</span>
@@ -374,60 +390,62 @@ const Profile = () => {
                   <div className="field-value">••••••••</div>
                 )}
               </div>
-              
+
               <div className="field-action">
-                <button 
+                <button
                   className="edit-toggle-button"
-                  onClick={() => handleEditToggle('password')}
+                  onClick={() => handleEditToggle("password")}
                 >
-                  {isEditing.password ? 'Cancel' : 'Change'}
+                  {isEditing.password ? "Cancel" : "Change"}
                 </button>
               </div>
             </div>
-            
+
             {isEditing.password && (
               <div className="field-edit">
-                <input 
+                <input
                   type="password"
                   name="currentPassword"
                   value={formData.currentPassword}
                   onChange={handleInputChange}
                   placeholder="Current password"
                   className="field-input"
+                  autoComplete="current-password"
                 />
-                <input 
+                <input
                   type="password"
                   name="newPassword"
                   value={formData.newPassword}
                   onChange={handleInputChange}
                   placeholder="New password"
                   className="field-input"
+                  autoComplete="new-password"
                 />
-                <input 
+                <input
                   type="password"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   placeholder="Confirm new password"
                   className="field-input"
+                  autoComplete="new-password"
                 />
-                <button 
+                <button
                   onClick={handleUpdatePassword}
                   className="save-button"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Saving...' : 'Save'}
+                  {isLoading ? "Saving..." : "Save"}
                 </button>
               </div>
             )}
           </div>
         </section>
       </div>
-      
+
       <ScrollToTopButton />
     </main>
   );
 };
 
 export default Profile;
-

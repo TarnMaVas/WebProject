@@ -6,8 +6,10 @@
   max-width: 35vw;
   background-color: #2a2f38;
   color: white;
-  border-left: 0.8vh solid;  border-radius: 0.6vh;
-  padding: 1.5vh 2vw;  box-shadow: 0 0.6vh 2vh rgba(0, 0, 0, 0.7);
+  border-left: 0.8vh solid;
+  border-radius: 0.6vh;
+  padding: 1.5vh 2vw;
+  box-shadow: 0 0.6vh 2vh rgba(0, 0, 0, 0.7);
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -118,4 +120,3 @@
     transform: translateY(3vh) scale(0.95);
   }
 }
-

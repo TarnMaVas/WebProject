@@ -144,7 +144,7 @@
   border-radius: 0.5vh;
   padding: 1.2vh;
   color: #fff;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 1.6vh;
   overflow: auto;
   max-height: 15vh;
@@ -254,16 +254,6 @@
   padding: 5vh;
 }
 
-.loading-spinner {
-  width: 4vh;
-  height: 4vh;
-  border: 0.4vh solid #333;
-  border-radius: 50%;
-  border-top: 0.4vh solid #15cd2e;
-  animation: spin 1s linear infinite;
-  margin-bottom: 2vh;
-}
-
 .sign-in-button {
   background-color: #15cd2e;
   color: #000;
@@ -281,8 +271,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive styles */

@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import '../styles/SnippetUploader.css';
-import { useTags } from '../hooks/useTags';
+import { useState } from "react";
+import "../styles/SnippetUploader.css";
+import { useTags } from "../hooks/useTags";
 
 const SnippetUploader = ({ onUpload, isUploading, onClose }) => {
-  const [title, setTitle] = useState('');
-  const [code, setCode] = useState('');
+  const [title, setTitle] = useState("");
+  const [code, setCode] = useState("");
   const [tags, setTags] = useState([]);
   const [errors, setErrors] = useState({});
   const { availableTags, isLoading: tagsLoading } = useTags();
 
   const handleTagToggle = (tag) => {
     if (tags.includes(tag)) {
-      setTags(tags.filter(t => t !== tag));
+      setTags(tags.filter((t) => t !== tag));
     } else {
       setTags([...tags, tag]);
     }
@@ -19,38 +19,38 @@ const SnippetUploader = ({ onUpload, isUploading, onClose }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!title.trim()) {
-      newErrors.title = 'Title is required';
+      newErrors.title = "Title is required";
     }
-    
+
     if (!code.trim()) {
-      newErrors.code = 'Code snippet is required';
+      newErrors.code = "Code snippet is required";
     }
-    
+
     if (tags.length === 0) {
-      newErrors.tags = 'At least one tag is required';
+      newErrors.tags = "At least one tag is required";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     const snippetData = {
       title,
       code,
-      tags
+      tags,
     };
-    
+
     const success = await onUpload(snippetData);
     if (success) {
-      setTitle('');
-      setCode('');
+      setTitle("");
+      setCode("");
       setTags([]);
       onClose();
     }
@@ -60,7 +60,7 @@ const SnippetUploader = ({ onUpload, isUploading, onClose }) => {
     <div className="snippet-uploader-overlay">
       <div className="snippet-uploader">
         <h2>Upload New Snippet</h2>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="title">Title</label>
@@ -70,11 +70,11 @@ const SnippetUploader = ({ onUpload, isUploading, onClose }) => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Give your snippet a descriptive title"
-              className={errors.title ? 'error' : ''}
+              className={errors.title ? "error" : ""}
             />
             {errors.title && <span className="error-text">{errors.title}</span>}
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="code">Code Snippet</label>
             <textarea
@@ -83,14 +83,14 @@ const SnippetUploader = ({ onUpload, isUploading, onClose }) => {
               onChange={(e) => setCode(e.target.value)}
               placeholder="Paste your code here..."
               rows={10}
-              className={errors.code ? 'error' : ''}
+              className={errors.code ? "error" : ""}
             />
             {errors.code && <span className="error-text">{errors.code}</span>}
           </div>
-          
+
           <div className="form-group">
             <label>Tags (select at least one)</label>
-            <div className={`tags-selector ${errors.tags ? 'error' : ''}`}>
+            <div className={`tags-selector ${errors.tags ? "error" : ""}`}>
               {tagsLoading ? (
                 <div className="tags-loading">Loading tags...</div>
               ) : (
@@ -100,7 +100,9 @@ const SnippetUploader = ({ onUpload, isUploading, onClose }) => {
                       type="button"
                       key={index}
                       onClick={() => handleTagToggle(tag)}
-                      className={`tag-option ${tags.includes(tag) ? 'selected' : ''}`}
+                      className={`tag-option ${
+                        tags.includes(tag) ? "selected" : ""
+                      }`}
                     >
                       {tag}
                     </button>
@@ -110,21 +112,13 @@ const SnippetUploader = ({ onUpload, isUploading, onClose }) => {
             </div>
             {errors.tags && <span className="error-text">{errors.tags}</span>}
           </div>
-          
+
           <div className="form-actions">
-            <button
-              type="button"
-              onClick={onClose}
-              className="cancel-btn"
-            >
+            <button type="button" onClick={onClose} className="cancel-btn">
               Cancel
             </button>
-            <button
-              type="submit"
-              className="upload-btn"
-              disabled={isUploading}
-            >
-              {isUploading ? 'Uploading...' : 'Upload Snippet'}
+            <button type="submit" className="upload-btn" disabled={isUploading}>
+              {isUploading ? "Uploading..." : "Upload Snippet"}
             </button>
           </div>
         </form>

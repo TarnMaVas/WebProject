@@ -93,6 +93,12 @@
   box-shadow: 0 0 1vh rgba(21, 205, 46, 0.5);
 }
 
+.form-group .input-help {
+  display: block;
+  font-size: 1.4vh;
+  color: #a0a0a0;
+  margin-top: 0.8vh;
+}
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,

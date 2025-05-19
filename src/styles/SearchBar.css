@@ -38,14 +38,13 @@
   font-size: 2.15vh;
   font-weight: bold;
   height: 6.6vh;
-  background: #15cd2e;;
+  background: #15cd2e;
   color: #020d1f;
   border: none;
   border-top-right-radius: 3vh;
   border-bottom-right-radius: 3vh;
   cursor: pointer;
   transition: background 0.3s;
-
 }
 
 .search-btn:hover {
@@ -71,7 +70,7 @@
   background-color: #1c1f26;
   border: 2px solid #5a5f69;
   height: 6.65vh;
-  font-family: 'Inter', sans-serif; 
+  font-family: "Inter", sans-serif;
   font-size: 2.15vh;
   font-weight: 400;
   overflow: hidden;
@@ -84,51 +83,51 @@
 }
 
 .multi-select .my-select__control--is-focused {
-border-color: #39cf39;
-box-shadow: 0 0 2vh #39cf39;
-overflow: visible;
-z-index: 1;
+  border-color: #39cf39;
+  box-shadow: 0 0 2vh #39cf39;
+  overflow: visible;
+  z-index: 1;
 }
 
 .multi-select .my-select__menu {
-background-color: #1c1f26;
-border-radius: 1vh;
+  background-color: #1c1f26;
+  border-radius: 1vh;
 }
 
 .multi-select .my-select__option {
-color: #ffffff;
-padding: 1.2vh;
-font-size: 2.15vh;
-transition: background 0.2s;
-cursor: pointer;
+  color: #ffffff;
+  padding: 1.2vh;
+  font-size: 2.15vh;
+  transition: background 0.2s;
+  cursor: pointer;
 }
 
 .multi-select .my-select__option--is-selected {
-background-color: #15cd2e;
-color: #020d1f;
+  background-color: #15cd2e;
+  color: #020d1f;
 }
 
 .multi-select .my-select__option--is-focused {
-background-color: #39cf39;
+  background-color: #39cf39;
 }
 
 .multi-select .my-select__multi-value {
-background-color: #15cd2e;
-border-radius: 0.5vh;
-flex-shrink: 0;
+  background-color: #15cd2e;
+  border-radius: 0.5vh;
+  flex-shrink: 0;
 }
 
 .multi-select .my-select__multi-value__label {
-color: #020d1f;
+  color: #020d1f;
 }
 
 .multi-select .my-select__multi-value__remove {
-color: #020d1f;
+  color: #020d1f;
 }
 
 .multi-select .my-select__multi-value__remove:hover {
-background-color: #03ff03;
-color: #020d1f;
+  background-color: #03ff03;
+  color: #020d1f;
 }
 
 .multi-select .my-select__value-container {

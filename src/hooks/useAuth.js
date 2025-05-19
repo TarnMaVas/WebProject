@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
-import { useFirebaseWithNotifications } from './useFirebaseWithNotifications';
+import { useState, useEffect } from "react";
+import { useFirebaseWithNotifications } from "./useFirebaseWithNotifications";
 
 export const useAuth = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { 
-    registerUser, 
-    loginUser, 
-    logoutUser, 
-    resetPassword, 
-    subscribeToAuthChanges 
+  const {
+    registerUser,
+    loginUser,
+    logoutUser,
+    resetPassword,
+    subscribeToAuthChanges,
   } = useFirebaseWithNotifications();
 
   useEffect(() => {
@@ -56,6 +56,6 @@ export const useAuth = () => {
     handleLogin,
     handleRegister,
     handleLogout,
-    handleResetPassword
+    handleResetPassword,
   };
 };

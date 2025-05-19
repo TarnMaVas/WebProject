@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
-import '../styles/Snippets.css';
-import { useSnippets } from '../hooks/useSnippets';
-import SnippetUploader from './SnippetUploader';
-import { useAuth } from '../hooks/useAuth';
-import { useDialog } from '../components/DialogProvider';
+import React, { useState } from "react";
+import "../styles/Snippets.css";
+import { useSnippets } from "../hooks/useSnippets";
+import SnippetUploader from "./SnippetUploader";
+import { useAuth } from "../hooks/useAuth";
+import { useDialog } from "../components/DialogProvider";
+import { useToast } from "../components/ToastProvider";
 
 const Snippets = () => {
   const [showUploader, setShowUploader] = useState(false);
   const { snippets, isLoading, uploading, uploadSnippet } = useSnippets();
   const { user } = useAuth();
   const { openDialog } = useDialog();
+  const toast = useToast();
+
   const handleOpenUploader = () => {
     setShowUploader(true);
   };
@@ -27,17 +30,17 @@ const Snippets = () => {
   };
 
   const handleSignInClick = () => {
-    openDialog('auth', { initialTab: 'login' });
+    openDialog("auth", { initialTab: "login" });
   };
 
   const formatDate = (timestamp) => {
-    if (!timestamp) return 'Unknown date';
-    
+    if (!timestamp) return "Unknown date";
+
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
@@ -95,7 +98,10 @@ const Snippets = () => {
                 <pre className="snippet-code">{snippet.code}</pre>
                 <button
                   className="copy-button"
-                  onClick={() => navigator.clipboard.writeText(snippet.code)}
+                  onClick={() => {
+                    navigator.clipboard.writeText(snippet.code);
+                    toast.showSuccess("Snippet copied to clipboard!");
+                  }}
                 >
                   Copy
                 </button>
@@ -137,10 +143,7 @@ const Snippets = () => {
           ) : (
             <>
               <p>Sign in to create and manage your code snippets.</p>
-              <button 
-                className="sign-in-button"
-                onClick={handleSignInClick}
-              >
+              <button className="sign-in-button" onClick={handleSignInClick}>
                 Sign In
               </button>
             </>

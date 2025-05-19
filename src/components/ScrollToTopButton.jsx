@@ -1,6 +1,6 @@
-import { useScrollToTop } from '../hooks/useScrollToTop';
+import { useScrollToTop } from "../hooks/useScrollToTop";
 import upArrowIcon from "../icons/up-arrow-icon.svg";
-import '../styles/ScrollToTopButton.css';
+import "../styles/ScrollToTopButton.css";
 
 const ScrollToTopButton = () => {
   const scrollToTop = useScrollToTop();

@@ -13,7 +13,7 @@ const Main = () => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = subscribeToAuthChanges(user => {
+    const unsubscribe = subscribeToAuthChanges((user) => {
       setCurrentUser(user);
     });
 
@@ -33,7 +33,7 @@ const Main = () => {
     handleCommentSubmit,
     handleReaction,
     handleDeleteComment,
-    hasUserReacted
+    hasUserReacted,
   } = useSnippetInteractions(currentUser, filteredResults, setFilteredResults);
 
   const handleSearchStart = () => {
@@ -47,14 +47,14 @@ const Main = () => {
   return (
     <main className="main-container">
       <section className="search-section">
-        <SearchBar 
-          onSearch={handleSearch} 
-          onSearchStart={handleSearchStart} 
+        <SearchBar
+          onSearch={handleSearch}
+          onSearchStart={handleSearchStart}
           onSearchEnd={handleSearchEnd}
           isLoading={isLoading}
         />
       </section>
-      
+
       <section className="results-section">
         <Results
           results={filteredResults}

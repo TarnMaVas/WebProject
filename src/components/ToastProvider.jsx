@@ -1,12 +1,12 @@
-import { createContext, useState, useContext } from 'react';
-import Toast from './Toast';
+import { createContext, useState, useContext } from "react";
+import Toast from "./Toast";
 
 const ToastContext = createContext();
 
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
-  const addToast = (message, type = 'info', duration = 3000) => {
+  const addToast = (message, type = "info", duration = 3000) => {
     const id = crypto.randomUUID();
     setToasts((prevToasts) => [...prevToasts, { id, message, type, duration }]);
     return id;
@@ -16,13 +16,24 @@ export const ToastProvider = ({ children }) => {
     setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
   };
 
-  const showSuccess = (message, duration) => addToast(message, 'success', duration);
-  const showError = (message, duration) => addToast(message, 'error', duration);
-  const showWarning = (message, duration) => addToast(message, 'warning', duration);
-  const showInfo = (message, duration) => addToast(message, 'info', duration);
+  const showSuccess = (message, duration) =>
+    addToast(message, "success", duration);
+  const showError = (message, duration) => addToast(message, "error", duration);
+  const showWarning = (message, duration) =>
+    addToast(message, "warning", duration);
+  const showInfo = (message, duration) => addToast(message, "info", duration);
 
   return (
-    <ToastContext.Provider value={{ addToast, removeToast, showSuccess, showError, showWarning, showInfo }}>
+    <ToastContext.Provider
+      value={{
+        addToast,
+        removeToast,
+        showSuccess,
+        showError,
+        showWarning,
+        showInfo,
+      }}
+    >
       {children}
       <div className="toast-container">
         {toasts.map((toast) => (
@@ -42,7 +53,7 @@ export const ToastProvider = ({ children }) => {
 export const useToast = () => {
   const context = useContext(ToastContext);
   if (context === undefined) {
-    throw new Error('useToast must be used within a ToastProvider');
+    throw new Error("useToast must be used within a ToastProvider");
   }
   return context;
 };

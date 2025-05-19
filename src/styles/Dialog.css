@@ -55,7 +55,7 @@
 }
 
 .dialog-container.info {
-  border-color: #A500FF;
+  border-color: #a500ff;
 }
 
 .dialog-header {
@@ -156,9 +156,9 @@
 }
 
 .confirm-button.info {
-  background-color: #A500FF;
+  background-color: #a500ff;
 }
 
 .confirm-button.info:hover {
-  background-color: #8F00DB;
+  background-color: #8f00db;
 }
