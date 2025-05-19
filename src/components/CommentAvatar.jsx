@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { getDefaultAvatar } from "../cloudinary/avatar";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
-import { checkCloudinaryAvatarExists } from "../cloudinary/avatar_helper";
+import { checkCloudinaryAvatarExists } from "../cloudinary/avatar";
 
 const CommentAvatar = ({ comment }) => {
   const [avatarUrl, setAvatarUrl] = useState(null);
